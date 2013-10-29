@@ -1,0 +1,24 @@
+\name{descrip_gp}
+\alias{descrip_gp}
+\title{Description of the clusters of variables}
+\usage{
+  descrip_gp(resclv, X, K = NULL)
+}
+\arguments{
+  \item{resclv}{resultat of CLV or CLV_kmeans}
+
+  \item{X}{the initial matrix used in CLV or CLV_kmeans}
+
+  \item{K}{the number of groups in the partition}
+}
+\description{
+  Complementary function that provides for each cluster
+  their correlation with their own cluster latent component
+  and with the next neighbouring cluster latent component.
+}
+\examples{
+data(apples_sh)
+resclvX <- CLV(X = apples_sh$senso, method = 1, sX = TRUE, graph = TRUE)
+descrip_gp(resclvX, X = apples_sh$senso, K = 4)
+}
+

@@ -1,0 +1,95 @@
+\name{CLV}
+\alias{CLV}
+\title{Hierarchical clustering of variables with consolidation}
+\usage{
+  CLV(X, Xu = NULL, Xr = NULL, method, sX = TRUE,
+    sXr = FALSE, sXu = FALSE, nmax = 20, graph = TRUE)
+}
+\arguments{
+  \item{X}{The matrix of variables to be clustered}
+
+  \item{Xu}{The external variables associated with the
+  columns of X}
+
+  \item{Xr}{The external variables associated with the rows
+  of X}
+
+  \item{method}{The criterion to be use in the cluster
+  analysis.  \cr 1 : the squared covariance is used as a
+  measure of proximity (directional groups). \cr 2 : the
+  covariance is used as a measure of proximity (local
+  groups)}
+
+  \item{sX}{TRUE/FALSE : standardization or not of the
+  columns X (TRUE by default)\cr (predefined -> cX = TRUE :
+  column-centering of X)}
+
+  \item{sXr}{TRUE/FALSE : standardization or not of the
+  columns Xr (FALSE by default)\cr (predefined -> cXr =
+  TRUE : column-centering of Xr)}
+
+  \item{sXu}{TRUE/FALSE : standardization or not of the
+  columns Xu (FALSE by default)\cr (predefined -> cXu=
+  FALSE : no centering, Xu considered as a weight matrix)}
+
+  \item{nmax}{maximum number of partitions for which the
+  consolidation will be done (by default nmax=20)}
+
+  \item{graph}{TRUE : dendrogram and evolution of the
+  aggregation criterion before and after consolidation
+  (default) FALSE : no graphs}
+}
+\value{
+  \item{tabres}{ Results of the clustering algorithm.  In
+  each line you find the results of one specific step of
+  the hierarchical clustering.  \itemize{ \item {Columns 1
+  and 2}{ : The numbers of the two groups which are merged}
+  \item {Column 3}{ : Name of the new cluster} \item
+  {Column 4}{ : The value of the aggregation criterion for
+  the Hierarchical Ascendant Clustering (HAC)} \item
+  {Column 5}{ : The value of the clustering criterion for
+  the HAC } \item {Column 6}{ : The percentage of the
+  explained initial criterion value\cr (method 1 => \% var.
+  expl. by the latent comp.)} \item {Column 7}{ : The value
+  of the clustering criterion after consolidation} \item
+  {Column 8}{ : The percentage of the explained initial
+  criterion value after consolidation} \item {Column 9}{ :
+  The number of iterations in the partitioning algorithm.
+  \cr Remark : A zero in columns 7 to 9 indicates that no
+  consolidation was done} }}
+
+  \item{partition K}{ contains a list for each number of
+  clusters of the partition, K=2 to nmax with \itemize{
+  \item {clusters}{ : in line 1, the groups membership
+  before consolidation; in line 2 the groups membership
+  after consolidation} \item {comp}{ : The latent
+  components of the clusters (after consolidation)} \item
+  {loading}{ : if there are external variables Xr or Xu :
+  The loadings of the external variables (after
+  consolidation)} }}
+}
+\description{
+  Hierarchical Cluster Analysis of a set of variables with
+  consolidation. Directional or local groups may be
+  defined. Each group of variables is associated with a
+  latent component. Moreover, the latent component may be
+  constrained using external information collected on the
+  observations or on the variables.
+}
+\details{
+  If external variables are used, define either Xr or Xu,
+  but not both. Use the LCLV function when Xr and Xu are
+  simultaneously provided.
+}
+\examples{
+data(apples_sh)
+#directional groups
+resclvX <- CLV(X = apples_sh$senso, method = 1, sX = TRUE, graph = TRUE)
+#local groups with external variables Xr
+resclvYX <- CLV(X = apples_sh$pref, Xr = apples_sh$senso,
+                method = 2, sX = FALSE, sXr = TRUE, graph = TRUE)
+}
+\seealso{
+  CLV_kmeans, LCLV
+}
+
