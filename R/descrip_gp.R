@@ -40,7 +40,7 @@ tab<-vector(length=K)
 correlation<-matrix(nrow=1,ncol=K)
 colnames(correlation)<-paste("group",c(1:K))
 groups<-list(NA)
-#latvar<-resclv[[K]]$comp
+
 
     
 for (k in 1:K) 
@@ -51,7 +51,7 @@ for (k in 1:K)
   caract<- matrix(0,nrow=ncol(Xgroup),ncol=2)
   rownames(caract)<-colnames(Xgroup)
   colnames(caract)<-c("cor in group","cor next group")
-    
+      
   for (j in 1:ncol(Xgroup))    {
     veccov<-cov(Xgroup[,j],latvar) #covariance between var j and the latent variable of ist group (k)
     veccor<-cor(Xgroup[,j],latvar) #correlation between var j and the latent variable of ist group (k)
@@ -61,19 +61,48 @@ for (k in 1:K)
     if (verif==F) {print (c(k,j)) }
     caract[j,1]<-round(veccor[ordrecov[1]],2) 
     caract[j,2]<-round(veccor[ordrecov[2]],2)
-  }
-  
+  }  
+    
   if (nrow(caract)==1) {
     groups[[k]]<-caract  
   }else{
     groups[[k]]<-caract[order(abs(caract[,1]),decreasing =T),] 
   }
  }
+  # sign modification if necessary
+  if (method==1) {
+    if (caract[1,1]<0) caract[,1]<-caract[,1]*(-1)
+    if (caract[1,2]<0) caract[,2]<-caract[,2]*(-1)
+  }
+  
+  clean_var<-NULL
+  if(resclv$param$m_clean!="none")  clean_var<-which(clusters==0)
 
-#   pk<- table(resclv[[K]]$clusters[2,]) 
+  
+  # percentage of the variation explained by the group's LV, within each group
+  # percentage of the total variation explained by the K LV
+  if (method==1) {
+   prop_within<-matrix(0,ncol=K,nrow=1)
+   colnames(prop_within)<-paste("Group.",1:K,sep="")
+   CLVcp<-latvar
+#   CLVcp<-matrix(0,nrow=n,ncol=K)
+    for(k in 1:K) {
+      Xgroup<-as.matrix(X[,clusters==k])
+#      ressvd<-svd(Xgroup)
+#      eigval<-ressvd$d^2
+#      CLVcp[,k]<-ressvd$u[,1]*ressvd$d[1]
+#      eigval<-svd(Xgroup)$d^2
+#      prop_within[k]<-eigval[1]/sum(eigval)
+      prop_within[k]<-var(CLVcp[,k])/sum(apply(Xgroup,2,var))
+   }
+   prop_tot<-sum(apply(CLVcp,2,var))/sum(apply(X,2,var))
+  }
+
+  
+ 
   corlv<-round(cor(latvar),2)
   names(corlv) = NULL
-
-return(list(number=pk,cormatrix=corlv,groups=groups))
   
+  if (method==1)   return(list(number=pk,prop_within=round(prop_within,4), prop_tot=round(prop_tot,4), groups=groups,clean_var=clean_var,cormatrix=corlv))
+  if (method==2)   return(list(number=pk,groups=groups,clean_var,cormatrix=corlv))
 }

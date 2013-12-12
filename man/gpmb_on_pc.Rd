@@ -3,7 +3,7 @@
 \title{Representation of the variables and their group membership}
 \usage{
   gpmb_on_pc(resclv, X, K = NULL, axeh = 1, axev = 2,
-    v_colors = NULL)
+    label = FALSE, v_colors = NULL, v_symbol = FALSE)
 }
 \arguments{
   \item{resclv}{results of CLV.r or CLV_kmeans.r}
@@ -16,7 +16,15 @@
 
   \item{axev}{component number for the vertical axis}
 
-  \item{v_colors}{default NULL}
+  \item{label}{= TRUE :the column names in X are used as
+  labels / = FALSE: no labels (by default)}
+
+  \item{v_colors}{default NULL. If missing colors are
+  given, by default}
+
+  \item{v_symbol}{=TRUE : symbols are given isntead of
+  colors for the identification of the groups/ =FALSE no
+  symbol (by default).}
 }
 \description{
   Loading plot of the variables from a Principal Components

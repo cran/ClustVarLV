@@ -93,11 +93,7 @@ CLV <- function(X,Xu=NULL,Xr=NULL,method,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=20,gra
  delta <- matrix(0,nrow=p-1, ncol=1)
  ordr <- c()
  
-#  matcov = t(X)%*%X
-#  rescpp= critcpp(matcov,crit,n)
-#  critstep = rescpp[[1]]
-#  deltamin = rescpp[[2]]
-#  
+
  if (method == 1 & EXTu == 0) {
    if((EXTr==0)) { 
      matcov = t(X)%*%X 
@@ -107,11 +103,7 @@ CLV <- function(X,Xu=NULL,Xr=NULL,method,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=20,gra
      matcov = t(X)%*%Xr%*%t(Xr)%*%X
      rescpp= critcpp(matcov,crit,n)   
    }
-#    if((EXTr==0)&(EXTu==1)) { 
-#      matcov1 = t(Xu)%*%t(X)%*%X%*%Xu
-#      matcov2 = t(Xu)%*%t(X)%*%X%*%t(X)%*%X%*%Xu
-#      rescpp= critcpp12(matcov1,matcov2,crit,n)      
-#    }
+
    critstep = rescpp[[1]]
    deltamin = rescpp[[2]]
    critstep[lower.tri(critstep, diag = T)] = NA
@@ -235,16 +227,18 @@ CLV <- function(X,Xu=NULL,Xr=NULL,method,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=20,gra
               if (EXTu==1)  u[,k]<-res$u
            }
         }    
-        T = cbind(T, sum(res$critere))
+ 
 #         
        groupes_tmp<-consol_affect(method,X,Xr,Xu,EXTr,EXTu,comp,a,u)
         
-      if (length(which((cc_consol[, i] == groupes_tmp) == FALSE, arr.ind = T)) == 0)  break
+         
+        
+      if (length(which((cc_consol[, i] == groupes_tmp) == FALSE, arr.ind = TRUE)) == 0)  break
       cc_consol = cbind(cc_consol, groupes_tmp)
     }
     rownames(cc_consol) <- colnames(X)      
     names(cc_consol) = NULL
- 
+                                                
     initgroupes<-cc_consol[,1]
     lastgroupes<-cc_consol[,ncol(cc_consol)]
     if ((EXTu==0)&(EXTr==0)) listcc = list(clusters = rbind(initgroupes,lastgroupes),  comp=comp)
@@ -301,9 +295,9 @@ CLV <- function(X,Xu=NULL,Xr=NULL,method,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=20,gra
                           
  colnames(results)= c("merg1","merg2","new.clust","agg.crit.hac","clust.crit.hac",
                       "%S0expl.hac","clust.crit.cc","%S0expl.cc","iter")
- names(resultscc) = paste("partition",1:nmax,sep="")
+ names(resultscc) = paste("partition",1:min(p-1,nmax),sep="")
  resultscc$tabres=results
- resultscc$param<-list(method=method,n = n, p = p,nmax = nmax,EXTu=EXTu,EXTr=EXTr,sX=sX,sXr=sXr,cXu=cXu,sXu=sXu)
+ resultscc$param<-list(method=method,n = n, p = p,nmax = nmax,EXTu=EXTu,EXTr=EXTr,sX=sX,sXr=sXr,cXu=cXu,sXu=sXu,m_clean="none")
  resultscah=list(labels=colnames(X),inertie=inertie, height=delta, merge=hmerge,order=ordr)    
  mytot<-resultscah  
  class(mytot)="hclust"
@@ -314,14 +308,16 @@ CLV <- function(X,Xu=NULL,Xr=NULL,method,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=20,gra
     dev.new() 
     plot(mydendC, type ="rectangle",  main="CLV Dendrogram", axes=F, cex.axis=0.5)
     dev.new() 
-    par(mfrow=c(1,2))
     if (p>20) gpmax<-20
     if (p<=20) gpmax<-p
     barplot(delta[(length(delta)-gpmax+2):length(delta)],col=4,xlab="Nb clusters", 
             ylab="delta", main="Variation of criterion (before consolidation)",
             axisnames=TRUE,names.arg=paste(gpmax:2,"->",(gpmax-1):1),las=2,
             cex.names=0.6,cex.main = 0.8)
-    tempo<-(results[(p-2):(p-gpmax),7]-results[(p-1):(p-gpmax+1),7])
+    dev.new() 
+    tempo<-(results[(p-2):(p-gpmax+1),7]-results[(p-1):(p-gpmax+2),7])
+    if (results[1,7]>0) tempo<-c(tempo,sbegin-results[1,7])
+    if (results[1,7]==0) tempo<-c(tempo,0)
     tempo[which(tempo<0)]<-0
     barplot(tempo[(gpmax-1):1],col=4,xlab="Nb clusters", ylab="delta", 
             main="Variation of criterion (after consolidation)",

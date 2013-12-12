@@ -4,7 +4,7 @@
 \usage{
   CLV_kmeans(X, Xu = NULL, Xr = NULL, method, sX = TRUE,
     sXr = FALSE, sXu = FALSE, init, iter.max = 20,
-    nstart = 1)
+    nstart = 1, m_clean = NULL, param_clean = NULL)
 }
 \arguments{
   \item{X}{The matrix of the variables to be clustered}
@@ -42,6 +42,15 @@
 
   \item{nstart}{nb of random initialisations in the case of
   init = a number (1 by default)}
+
+  \item{m_clean}{three possibilities "none"(no cleaning,
+  the default) , "alpha" (an additional cluster with the
+  noise variables selected according to the risk level
+  alpha), or "rlevel" (an additional cluster with the
+  variables whose correlation is less than the rlevel}
+
+  \item{param_clean}{=alpha if m_clean="alpha" (0.05 by
+  default), =rlevel if m_clean="rlevel" (0.60 by default)}
 }
 \value{
   \item{tabres}{ The value of the clustering criterion at

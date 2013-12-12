@@ -12,24 +12,31 @@ function(method,X,EXTr,Xr,EXTu,Xu,ind)
       if ( dim(Xk)[1] > dim(Xk)[2] ) {
         vp=eigen(t(Xk)%*%Xk)
         comp<-Xk%*%vp$vectors[,1]%*%(vp$values[1])^(-1/2)
+        CLVcomp<-Xk%*%vp$vectors[,1]
       }  else {
         vp <- eigen(Xk %*% t(Xk))
         comp<- vp$vectors[,1]
+        CLVcomp<- vp$vectors[,1]*sqrt(vp$values[1])
       }
+      jj<-which.max(cor(CLVcomp,Xk))  # modification of the sign of CLVcomp so that it is positively correlated with the closest variable  
+      if (cor(CLVcomp,Xk[,jj])<0) CLVcomp=(-1)*CLVcomp
       critere<-  vp$values[1] /(n-1)
-      res<-list(comp=comp,critere=critere)
+      res<-list(comp=CLVcomp,critere=critere)
     }
     if((EXTr==1)&(EXTu==0)) {
       if ( dim(Xr)[2] > dim(Xk)[2]   ) {  
         vp <- eigen( t(t(Xr)%*%Xk)%*%t(Xr)%*%Xk)
-        a<-t(Xr)%*%Xk%*%vp$vectors[,1]%*%((n-1)*vp$values[1])^(-1/2)
-      } else {
-        vp <- eigen(1/(n-1) * t(Xr)%*%Xk %*% t(t(Xr)%*%Xk))
+        a<-t(Xr)%*%Xk%*%vp$vectors[,1]%*%(vp$values[1])^(-1/2)
+       } else {
+        vp <- eigen(t(Xr)%*%Xk %*% t(t(Xr)%*%Xk))
         a<- vp$vectors[,1] 
-      }  
-      comp<- Xr%*% a                                  
-      critere<-  vp$values[1] 
-      res<-list(comp=comp,a=a,critere=critere)
+    }  
+                     
+      CLVcomp<- Xr%*% a        
+      jj<-which.max(cor(CLVcomp,Xk))  # modification of the sign of CLVcomp so that it is positively correlated with the closest variable  
+      if (cor(CLVcomp,Xk[,jj])<0) CLVcomp=(-1)*CLVcomp
+      critere<-  vp$values[1] /(n-1)
+      res<-list(comp=CLVcomp,a=a,critere=critere)
     }
     if ((EXTr==0)&(EXTu==1)) {
       P<-Xk %*% Xu[ind,]
@@ -39,8 +46,10 @@ function(method,X,EXTr,Xr,EXTu,Xu,ind)
       alpha2<-eigen(t(P)%*%P)$values[1] 
       crit<- vp$values[1]/((n-1)*alpha2)      
       u<-vp$vectors[,1]
-      comp<-P%*%u /sqrt(alpha2)
-      res<-list(comp=comp,u=u,critere=crit)
+      CLVcomp<-P%*%u /sqrt(alpha2)
+      jj<-which.max(cor(CLVcomp,P))  # modification of the sign of CLVcomp so that it is positively correlated with the closest variable  
+      if (cor(CLVcomp,P[,jj])<0) CLVcomp=(-1)*CLVcomp
+      res<-list(comp=CLVcomp,u=u,critere=crit)
     }
   }
 
@@ -51,7 +60,7 @@ function(method,X,EXTr,Xr,EXTu,Xu,ind)
       #res<-list(comp=comp,critere=critere)              # version RSA       
       compnorm<-comp/as.numeric(sqrt(t(comp)%*%comp))  # version CommStat  ck normalized
       critere<-pk*apply(comp,2,sd)                             # version CommStat
-      res<-list(comp=compnorm,critere=critere)         # version CommStat
+      res<-list(comp=comp,critere=critere)         # version CommStat
     }    
     if ((EXTu==0)& (EXTr==1)){                 
       aa = t(Xr)%*% Xk %*% matrix(1,pk,1) /pk

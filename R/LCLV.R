@@ -237,9 +237,9 @@ function(X,Xr,Xu,ccX=FALSE,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=20,graph=TRUE)
   P=X%*%Xu%*%M
   B=t(P)%*%Xr
   svd = svd(B)
-  a[,1]=svd$v[,1];                
+  a=svd$v[,1];                
   compt[,1]=Xr%*%a
-  u[,1]=svd$u[,1]
+  u=svd$u[,1]
   compc[,1]=P%*%u        
  
   listcc = list(clusters = group1,  compt=compt,compc=compc, loading_u=u,loading_v=a)
@@ -295,12 +295,12 @@ function(X,Xr,Xu,ccX=FALSE,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=20,graph=TRUE)
    dev.new() 
    plot(mydendC, type ="rectangle",  main="CLV Dendrogram", axes=F, cex.axis=0.5)
    dev.new() 
-   par(mfrow=c(1,2))
    if (p>20) gpmax<-20
    if (p<=20) gpmax<-p
    barplot(delta[(length(delta)-gpmax+2):length(delta)],col=4,xlab="Nb clusters", ylab="delta", 
            main="Variation of criterion (before consolidation)",axisnames=TRUE,
            names.arg=paste(gpmax:2,"->",(gpmax-1):1),las=2,cex.names=0.6,cex.main = 0.8)
+   dev.new() 
    tempo<-(results[(p-2):(p-gpmax),7]-results[(p-1):(p-gpmax+1),7])
    tempo[which(tempo<0)]<-0
    barplot(tempo[(gpmax-1):1],col=4,xlab="Nb clusters", ylab="delta", 
