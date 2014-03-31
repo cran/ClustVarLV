@@ -40,8 +40,9 @@ tab<-vector(length=K)
 correlation<-matrix(nrow=1,ncol=K)
 colnames(correlation)<-paste("group",c(1:K))
 groups<-list(NA)
-
-
+# latent var must be set as c'c=1
+lvstd<-latvar/sqrt(matrix(apply(latvar,2,var)*(n-1),n,K,byrow=T))
+    
     
 for (k in 1:K) 
   {
@@ -53,7 +54,7 @@ for (k in 1:K)
   colnames(caract)<-c("cor in group","cor next group")
       
   for (j in 1:ncol(Xgroup))    {
-    veccov<-cov(Xgroup[,j],latvar) #covariance between var j and the latent variable of ist group (k)
+    veccov<-cov(Xgroup[,j],lvstd) #covariance between var j and the latent variable of ist group (k)
     veccor<-cor(Xgroup[,j],latvar) #correlation between var j and the latent variable of ist group (k)
     if (method==1) ordrecov<-order(veccov^2,decreasing=T)
     if (method==2) ordrecov<-order(veccov,decreasing=T)
@@ -63,17 +64,23 @@ for (k in 1:K)
     caract[j,2]<-round(veccor[ordrecov[2]],2)
   }  
     
+ 
+  
   if (nrow(caract)==1) {
     groups[[k]]<-caract  
   }else{
-    groups[[k]]<-caract[order(abs(caract[,1]),decreasing =T),] 
+    if (method==1) groups[[k]]<-caract[order(abs(caract[,1]),decreasing =T),] 
+    if (method==2) groups[[k]]<-caract[order(caract[,1],decreasing =T),]
   }
- }
+  
   # sign modification if necessary
   if (method==1) {
-    if (caract[1,1]<0) caract[,1]<-caract[,1]*(-1)
-    if (caract[1,2]<0) caract[,2]<-caract[,2]*(-1)
+    if (groups[[k]][1,1]<0) groups[[k]][,1]<-groups[[k]][,1]*(-1)
+    if (groups[[k]][1,2]<0) groups[[k]][,2]<-groups[[k]][,2]*(-1)
   }
+  
+  
+}
   
   clean_var<-NULL
   if(resclv$param$m_clean!="none")  clean_var<-which(clusters==0)

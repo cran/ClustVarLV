@@ -119,13 +119,13 @@ CLV_kmeans <- function(X,Xu=NULL,Xr=NULL,method,sX=TRUE,sXr=FALSE,sXu=FALSE,init
 ################################################
 # when the variables form only one cluster  
 if (K==1){
-  if (m_clean=="none") {
-    critere <-0
-  } else {
-    critere <-rep(0,K+1)
-  }
   cc_consol <- as.matrix(rep(1,p))
   for (i in 1:iter.max) {
+    if (m_clean=="none") {
+      critere <-rep(0,K)
+    } else {
+      critere <-rep(0,K+1)
+    }
     groupes_tmp<-cc_consol[,i]
     ind<-which(groupes_tmp == 1)    
     res<-consol_calcul(method,X,EXTr,Xr,EXTu,Xu,ind) 
@@ -160,18 +160,18 @@ if (K==1){
 # for K (>1) clusters  
 if (K>1) {
 cc_consol <- as.matrix(as.numeric(groupes))  
-if (m_clean=="none") {
-  critere <-rep(0,K)
-} else {
-  critere <-rep(0,K+1)
-}
 
 for (i in 1:iter.max) {
-  groupes_tmp<-cc_consol[,i]
-  
+  if (m_clean=="none") {
+    critere <-rep(0,K)
+  } else {
+    critere <-rep(0,K+1)
+  }
+  groupes_tmp<-cc_consol[,i] 
+ 
   for (k in 1:K) { 
     ind<-which(groupes_tmp==k)
-    if (length(ind) > 0) {          
+    if (length(ind) > 0) {    
       res <- consol_calcul(method,X,EXTr,Xr,EXTu,Xu,ind)  
       critere[k]<-res$critere
       comp[,k]<-res$comp
@@ -181,16 +181,15 @@ for (i in 1:iter.max) {
   }
   if (m_clean!="none") {
     k=K+1
-    critere[k]=0
     ind<-which(groupes_tmp[1:p]==k)
     if (length(ind) > 0) {
       for (j in 1:length(ind)) {
         if (method==2) { critere[k] = critere[k] + (seuilcor*sqrt(var(X[,ind[j]])) )  }
         if (method==1) { critere[k] = critere[k] + (seuilcor^2*var(X[,ind[j]]) ) }
       }
-    }  
+    }
   }
-  
+   
   # re-allocation of the variables
   groupes_tmp<-consol_affect(method,X,Xr,Xu,EXTr,EXTu,comp,a,u,rlevel=seuilcor)
   if (length(which((cc_consol[,i] == groupes_tmp) == FALSE, arr.ind = T)) == 0)    break
@@ -213,12 +212,13 @@ crit_trials<-sum(critere)
           if (EXTu==1)  {  u2<-out$u }
           groupes2 <- as.factor(consol_affect(method,X,Xr,Xu,EXTr,EXTu,comp2,a2,u2))
           cc_consol2 <- as.matrix(as.numeric(groupes2))
+          
+          for (i in 1:iter.max) {
           if (m_clean=="none") {
             critere2 <-rep(0,K)
           } else {
-            critere2 <-rep(0,K+1)
-          }
-          for (i in 1:iter.max) {
+             critere2 <-rep(0,K+1)
+           }
             groupes_tmp2<-cc_consol2[,i]
             for (k in 1:K) {
               ind2<-which(groupes_tmp2==k)
@@ -232,7 +232,6 @@ crit_trials<-sum(critere)
             }
             if (m_clean!="none") {
               k=K+1
-              critere2[k]=0
               ind2<-which(groupes_tmp2[1:p]==k)
                if (length(ind2) > 0) {
                 for (j in 1:length(ind2)) {

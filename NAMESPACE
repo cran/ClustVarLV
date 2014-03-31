@@ -1,4 +1,5 @@
 useDynLib(ClustVarLV)
+import(Rcpp)
 ##Exported functions:
 export(CLV,CLV_kmeans,descrip_gp,gpmb_on_pc,LCLV,print.clv,print.clvkmeans,print.lclv)
 S3method(print,clv)

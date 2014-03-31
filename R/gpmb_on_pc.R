@@ -64,6 +64,9 @@ function(resclv,X,K=NULL,axeh=1,axev=2,label=FALSE,v_colors=NULL,v_symbol=FALSE)
     ymax=max(max(coordvar[,axev]),-min(coordvar[,axev]))
   }
   
+  clean_var<-NULL
+  if(resclv$param$m_clean!="none")  clean_var<-which(clusters==0)
+  
   
   dev.new() 
   par(pty="s")
@@ -71,8 +74,14 @@ function(resclv,X,K=NULL,axeh=1,axev=2,label=FALSE,v_colors=NULL,v_symbol=FALSE)
   symbpart<-NULL
   symbpart<-20
   for (j in 1:p) {
-    colpart[j]<-v_colors[clusters[j]]
-    if(v_symbol) symbpart[j]=clusters[j]
+    if (j %in% clean_var) {
+        colpart[j]<-"gray"
+        if(v_symbol) symbpart[j]="."
+    }else{
+        colpart[j]<-v_colors[clusters[j]]
+        if(v_symbol) symbpart[j]=clusters[j]
+    }
+    
   }
   
   plot(coordvar[,c(axeh,axev)],col=colpart,pch=symbpart,cex.axis=0.7,cex.lab=0.7,
