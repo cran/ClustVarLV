@@ -2,8 +2,8 @@
 \alias{gpmb_on_pc}
 \title{Representation of the variables and their group membership}
 \usage{
-  gpmb_on_pc(resclv, X, K = NULL, axeh = 1, axev = 2,
-    label = FALSE, v_colors = NULL, v_symbol = FALSE)
+gpmb_on_pc(resclv, X, K = NULL, axeh = 1, axev = 2, label = FALSE,
+  v_colors = NULL, v_symbol = FALSE)
 }
 \arguments{
   \item{resclv}{results of CLV.r or CLV_kmeans.r}
@@ -27,9 +27,9 @@
   symbol (by default).}
 }
 \description{
-  Loading plot of the variables from a Principal Components
-  Analysis. The group membership of the variables is
-  superimposed.
+Loading plot of the variables from a Principal Components
+Analysis. The group membership of the variables is
+superimposed.
 }
 \examples{
 data(apples_sh)

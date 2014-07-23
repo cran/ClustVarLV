@@ -11,9 +11,9 @@
   methods}
 }
 \description{
-  Print the CLV_kmeans results
+Print the CLV_kmeans results
 }
 \seealso{
-  CLV_kmeans
+CLV_kmeans
 }
 

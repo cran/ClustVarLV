@@ -38,8 +38,8 @@
 #'                \item {loading_u}{ : loadings of the external Xu variables (after consolidation)}
 #'          }}
 #' @references Vigneau, E., Endrizzi, I.,& Qannari, E.M. (2011). Finding and explaining clusters of consumers using CLV approach. Food Quality and Preference, 22, 705-713.
-#' @references Vigneau, E., Charles, M.,& Chen, M. (2013). External preference segmentation with additional information on consumers: A case study on apples. Food Quality and Preference. 
-#'               doi: \url{http://dx.doi.org/10.1016/j.foodqual.2013.02.007}
+#' @references Vigneau, E., Charles, M.,& Chen, M. (2014). External preference segmentation with additional information on consumers: A case study on apples. Food Quality and Preference, 32, 83-92. 
+#'        
 LCLV <-
 function(X,Xr,Xu,ccX=FALSE,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=20,graph=TRUE)
 {

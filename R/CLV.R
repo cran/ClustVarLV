@@ -122,6 +122,7 @@ CLV <- function(X,Xu=NULL,Xr=NULL,method,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=20,gra
    }  
  }
  
+
  
  for (level in 1:(p-1)) { 
    cmerge<-mincpp(deltamin)
@@ -192,14 +193,15 @@ CLV <- function(X,Xu=NULL,Xr=NULL,method,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=20,gra
 # 		    deltamin[cmerge1,iter]<-crit[gr2[1]]+crit[gr1[1]]-critstep[cmerge1,iter]		    
 # 			}
 #     }
-	 
+
     if ((ncluster <= nmax) & (ncluster > 1) ) {
     cc_consol <- t(t(groupes))
     K <- ncluster
     T<-c()   
     maxiter=20
-           
-   for (i in 1:maxiter) {           
+  
+   for (i in 1:maxiter) {       
+
         critere <-rep(0,K)
         groupes_tmp <- cc_consol[,i]
         out<-mat_init(X,EXTr,Xr,EXTu,Xu,K)
@@ -228,17 +230,15 @@ CLV <- function(X,Xu=NULL,Xr=NULL,method,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=20,gra
            }
         }    
  
-#         
        groupes_tmp<-consol_affect(method,X,Xr,Xu,EXTr,EXTu,comp,a,u)
-        
-         
-        
+
+            
       if (length(which((cc_consol[, i] == groupes_tmp) == FALSE, arr.ind = TRUE)) == 0)  break
       cc_consol = cbind(cc_consol, groupes_tmp)
     }
     rownames(cc_consol) <- colnames(X)      
     names(cc_consol) = NULL
-                                                
+                                    
     initgroupes<-cc_consol[,1]
     lastgroupes<-cc_consol[,ncol(cc_consol)]
     if ((EXTu==0)&(EXTr==0)) listcc = list(clusters = rbind(initgroupes,lastgroupes),  comp=comp)
@@ -297,12 +297,13 @@ CLV <- function(X,Xu=NULL,Xr=NULL,method,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=20,gra
                       "%S0expl.hac","clust.crit.cc","%S0expl.cc","iter")
  names(resultscc) = paste("partition",1:min(p-1,nmax),sep="")
  resultscc$tabres=results
- resultscc$param<-list(method=method,n = n, p = p,nmax = nmax,EXTu=EXTu,EXTr=EXTr,sX=sX,sXr=sXr,cXu=cXu,sXu=sXu,m_clean="none")
+ resultscc$param<-list(method=method,n = n, p = p,nmax = nmax,EXTu=EXTu,EXTr=EXTr,sX=sX,sXr=sXr,cXu=cXu,sXu=sXu,strategy="none")
  resultscah=list(labels=colnames(X),inertie=inertie, height=delta, merge=hmerge,order=ordr)    
  mytot<-resultscah  
  class(mytot)="hclust"
+ clvclt= c(resultscc, list(mydendC = mytot)) 
  mydendC=as.dendrogram(mytot)
- clvclt= c(resultscc, list(mydendC = mydendC)) 
+# clvclt= c(resultscc, list(mydendC = mydendC))  
 
  if (graph) {
     dev.new() 

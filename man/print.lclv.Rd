@@ -11,9 +11,9 @@
   methods}
 }
 \description{
-  Print the LCLV results
+Print the LCLV results
 }
 \seealso{
-  LCLV
+LCLV
 }
 

@@ -65,10 +65,19 @@ function(resclv,X,K=NULL,axeh=1,axev=2,label=FALSE,v_colors=NULL,v_symbol=FALSE)
   }
   
   clean_var<-NULL
-  if(resclv$param$m_clean!="none")  clean_var<-which(clusters==0)
+  if(resclv$param$strategy=="kplusone")  clean_var<-which(clusters==0)
+  if(resclv$param$strategy=="sparselv"){
+    names0=c()
+    sloading = resclv$sloading
+    for(k in 1:K) names0 = c(names0,dimnames(sloading[[k]])[[1]])
+    names1 = names0[which(unlist(sloading)==0)]
+    names2= dimnames(resclv$clusters)[[2]]
+    clean_var = sort(match(names1,names2))
+    names(clean_var) = colnames(X)[clean_var]
+  }
   
   
-  dev.new() 
+
   par(pty="s")
   colpart<-NULL
   symbpart<-NULL
@@ -98,8 +107,8 @@ function(resclv,X,K=NULL,axeh=1,axev=2,label=FALSE,v_colors=NULL,v_symbol=FALSE)
   if (resclv$param$sX) symbols(0, 0, circles = 1, inches = FALSE, add = TRUE) 
   ncol=ceiling(K/4)
   if(v_symbol) {
-    legend("topleft",paste("G",1:K,sep=""),col=v_colors[1:K],title="Groupes", lty="solid", pch=1:K, seg.len=0.6,cex=0.7,ncol=ncol)     
+    legend("topleft",paste("G",1:K,sep=""),col=v_colors[1:K],title="Groups", lty="solid", pch=1:K, seg.len=0.6,cex=0.7,ncol=ncol)     
   } else {
-    legend("topleft",paste("G",1:K,sep=""),col=v_colors[1:K],title="Groupes", lty="solid",  seg.len=0.6,cex=0.7,ncol=ncol) 
+    legend("topleft",paste("G",1:K,sep=""),col=v_colors[1:K],title="Groups", lty="solid",  seg.len=0.6,cex=0.7,ncol=ncol) 
   }
 }

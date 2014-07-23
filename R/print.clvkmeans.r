@@ -16,6 +16,7 @@ print.clvkmeans =  function (x, ...)
   EXTu=x$param$EXTu
   EXTr=x$param$EXTr
   method =  x$param$method
+  strategy = x$param$strategy
   
   cat("\n")
   cat(paste("number of variables: ", p), sep = " ")
@@ -27,6 +28,9 @@ print.clvkmeans =  function (x, ...)
   cat("\n")
   cat(paste("number of clusters: ", x$param$K), sep = " ")
   cat("\n")
+  if (strategy=="sparselv") cat(paste("number of noise: ", length(which(unlist(x$sloading)==0))), sep = " ")
+  if (strategy=="kplusone") cat(paste("number of noise: ", length(which(x$clusters[2,]==0))), sep = " ")
+  cat("\n")
   cat("\n")
   cat("$tabres: clustering criterion")
   cat("\n")
@@ -37,6 +41,10 @@ print.clvkmeans =  function (x, ...)
     cat("\n")
     cat("$loading: loadings of the external variables")
   }
+  if (strategy=="sparselv"){
+    cat("\n")
+    cat("$sloading: sparse loading for latent variable")
+  } 
   cat("\n")
   
 }

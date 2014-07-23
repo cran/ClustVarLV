@@ -2,8 +2,8 @@
 \alias{CLV}
 \title{Hierarchical clustering of variables with consolidation}
 \usage{
-  CLV(X, Xu = NULL, Xr = NULL, method, sX = TRUE,
-    sXr = FALSE, sXu = FALSE, nmax = 20, graph = TRUE)
+CLV(X, Xu = NULL, Xr = NULL, method, sX = TRUE, sXr = FALSE,
+  sXu = FALSE, nmax = 20, graph = TRUE)
 }
 \arguments{
   \item{X}{The matrix of variables to be clustered}
@@ -40,46 +40,44 @@
   (default) FALSE : no graphs}
 }
 \value{
-  \item{tabres}{ Results of the clustering algorithm.  In
-  each line you find the results of one specific step of
-  the hierarchical clustering.  \itemize{ \item {Columns 1
-  and 2}{ : The numbers of the two groups which are merged}
-  \item {Column 3}{ : Name of the new cluster} \item
-  {Column 4}{ : The value of the aggregation criterion for
-  the Hierarchical Ascendant Clustering (HAC)} \item
-  {Column 5}{ : The value of the clustering criterion for
-  the HAC } \item {Column 6}{ : The percentage of the
-  explained initial criterion value\cr (method 1 => \% var.
-  expl. by the latent comp.)} \item {Column 7}{ : The value
-  of the clustering criterion after consolidation} \item
-  {Column 8}{ : The percentage of the explained initial
-  criterion value after consolidation} \item {Column 9}{ :
-  The number of iterations in the partitioning algorithm.
-  \cr Remark : A zero in columns 7 to 9 indicates that no
-  consolidation was done} }}
+\item{tabres}{ Results of the clustering algorithm.  In
+each line you find the results of one specific step of the
+hierarchical clustering.  \itemize{ \item {Columns 1 and
+2}{ : The numbers of the two groups which are merged} \item
+{Column 3}{ : Name of the new cluster} \item {Column 4}{ :
+The value of the aggregation criterion for the Hierarchical
+Ascendant Clustering (HAC)} \item {Column 5}{ : The value
+of the clustering criterion for the HAC } \item {Column 6}{
+: The percentage of the explained initial criterion
+value\cr (method 1 => \% var. expl. by the latent comp.)}
+\item {Column 7}{ : The value of the clustering criterion
+after consolidation} \item {Column 8}{ : The percentage of
+the explained initial criterion value after consolidation}
+\item {Column 9}{ : The number of iterations in the
+partitioning algorithm. \cr Remark : A zero in columns 7 to
+9 indicates that no consolidation was done} }}
 
-  \item{partition K}{ contains a list for each number of
-  clusters of the partition, K=2 to nmax with \itemize{
-  \item {clusters}{ : in line 1, the groups membership
-  before consolidation; in line 2 the groups membership
-  after consolidation} \item {comp}{ : The latent
-  components of the clusters (after consolidation)} \item
-  {loading}{ : if there are external variables Xr or Xu :
-  The loadings of the external variables (after
-  consolidation)} }}
+\item{partition K}{ contains a list for each number of
+clusters of the partition, K=2 to nmax with \itemize{ \item
+{clusters}{ : in line 1, the groups membership before
+consolidation; in line 2 the groups membership after
+consolidation} \item {comp}{ : The latent components of the
+clusters (after consolidation)} \item {loading}{ : if there
+are external variables Xr or Xu : The loadings of the
+external variables (after consolidation)} }}
 }
 \description{
-  Hierarchical Cluster Analysis of a set of variables with
-  consolidation. Directional or local groups may be
-  defined. Each group of variables is associated with a
-  latent component. Moreover, the latent component may be
-  constrained using external information collected on the
-  observations or on the variables.
+Hierarchical Cluster Analysis of a set of variables with
+consolidation. Directional or local groups may be defined.
+Each group of variables is associated with a latent
+component. Moreover, the latent component may be
+constrained using external information collected on the
+observations or on the variables.
 }
 \details{
-  If external variables are used, define either Xr or Xu,
-  but not both. Use the LCLV function when Xr and Xu are
-  simultaneously provided.
+If external variables are used, define either Xr or Xu, but
+not both. Use the LCLV function when Xr and Xu are
+simultaneously provided.
 }
 \examples{
 data(apples_sh)
@@ -90,6 +88,6 @@ resclvYX <- CLV(X = apples_sh$pref, Xr = apples_sh$senso,
                 method = 2, sX = FALSE, sXr = TRUE, graph = TRUE)
 }
 \seealso{
-  CLV_kmeans, LCLV
+CLV_kmeans, LCLV
 }
 

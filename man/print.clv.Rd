@@ -11,9 +11,9 @@
   methods}
 }
 \description{
-  Print the CLV results
+Print the CLV results
 }
 \seealso{
-  CLV
+CLV
 }
 

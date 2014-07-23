@@ -2,9 +2,9 @@
 \alias{CLV_kmeans}
 \title{K-means algorithm for the clustering of variables}
 \usage{
-  CLV_kmeans(X, Xu = NULL, Xr = NULL, method, sX = TRUE,
-    sXr = FALSE, sXu = FALSE, init, iter.max = 20,
-    nstart = 1, m_clean = NULL, param_clean = NULL)
+CLV_kmeans(X, Xu = NULL, Xr = NULL, method, sX = TRUE, sXr = FALSE,
+  sXu = FALSE, init, iter.max = 20, nstart = 1, strategy = "none",
+  rho = 0)
 }
 \arguments{
   \item{X}{The matrix of the variables to be clustered}
@@ -43,34 +43,32 @@
   \item{nstart}{nb of random initialisations in the case of
   init = a number (1 by default)}
 
-  \item{m_clean}{three possibilities "none"(no cleaning,
-  the default) , "alpha" (an additional cluster with the
-  noise variables selected according to the risk level
-  alpha), or "rlevel" (an additional cluster with the
-  variables whose correlation is less than the rlevel}
+  \item{strategy}{"none", or "kplusone" (an additional
+  cluster for the noise variables, default), or "sparselv"
+  (zero loadings for the noise variables)}
 
-  \item{param_clean}{=alpha if m_clean="alpha" (0.05 by
-  default), =rlevel if m_clean="rlevel" (0.60 by default)}
+  \item{rho}{a threshold of correlation between 0 and 1 (0
+  by default)}
 }
 \value{
-  \item{tabres}{ The value of the clustering criterion at
-  convergence.\cr The percentage of the explained initial
-  criterion value.\cr The number of iterations in the
-  partitioning algorithm.} \item{clusters}{ the group's
-  membership} \item{comp}{ The latent components of the
-  clusters} \item{loading}{ if there are external variables
-  Xr or Xu : The loadings of the external variables}
+\item{tabres}{ The value of the clustering criterion at
+convergence.\cr The percentage of the explained initial
+criterion value.\cr The number of iterations in the
+partitioning algorithm.} \item{clusters}{ the group's
+membership} \item{comp}{ The latent components of the
+clusters} \item{loading}{ if there are external variables
+Xr or Xu : The loadings of the external variables}
 }
 \description{
-  K-means algorithm for the clustering of variables.
-  Directional or local groups may be defined. Each group of
-  variables is associated with a latent component. Moreover
-  external information collected on the observations or on
-  the variables may be introduced.
+K-means algorithm for the clustering of variables.
+Directional or local groups may be defined. Each group of
+variables is associated with a latent component. Moreover
+external information collected on the observations or on
+the variables may be introduced.
 }
 \details{
-  The initalization can be made at random, repetitively, or
-  can be defined by the user.
+The initalization can be made at random, repetitively, or
+can be defined by the user.
 }
 \examples{
 data(apples_sh)
@@ -79,6 +77,6 @@ resclvkmYX <- CLV_kmeans(X = apples_sh$pref, Xr = apples_sh$senso,
                          method = 2, sX = FALSE, sXr = TRUE, init = 2, nstart = 20)
 }
 \seealso{
-  CLV, LCLV
+CLV, LCLV
 }
 
