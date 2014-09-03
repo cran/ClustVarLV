@@ -44,7 +44,7 @@ clean_var<-NULL
 if(resclv$param$strategy=="kplusone")  {
   clean_var<-which(clusters==0)
   pk<- table(clusters)
-  names(pk)[1]<-"noise cluster"
+  if (length(pk)>K) names(pk)[1]<-"noise cluster"
   if (length(clean_var)==p)   stop ("All variables are considered as noise")
 }
 if(resclv$param$strategy=="sparselv"){
@@ -57,10 +57,10 @@ if(resclv$param$strategy=="sparselv"){
   names(clean_var) = colnames(X)[clean_var]  
   clusters[clean_var] = 0
   pk<- table(clusters)
-  names(pk)[1]<-"zero loading"
+  if (length(pk)>K)  names(pk)[1]<-"zero loading"
   if (length(clean_var)==p)   stop ("All variables have a zero loadings")
 }
-
+if(resclv$param$strategy=="none") pk<-table(clusters)
 
 # initialisation  
 tab<-vector(length=K) 
