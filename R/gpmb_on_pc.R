@@ -9,12 +9,13 @@
 #' @param axev component number for the vertical axis 
 #' @param label = TRUE :the column names in X are used as labels / = FALSE: no labels (by default)
 #' @param v_colors default NULL. If missing colors are given, by default
-#' @param v_symbol =TRUE : symbols are given isntead of colors for the identification of the groups/ =FALSE no symbol (by default). 
+#' @param v_symbol =TRUE : symbols are given isntead of colors for the identification of the groups/ =FALSE: no symbol (by default). 
+#' @param beside =TRUE : a plot per cluster of variables, side-by-side/ =FALSE :an unique plot with all the variables with the identification of their group membership (by default). 
 #' @examples data(apples_sh)
 #' resclvX <- CLV(X = apples_sh$senso, method = 1, sX = TRUE, graph = TRUE)
 #' gpmb_on_pc(resclvX, X = apples_sh$senso, K = 4, axeh = 1, axev = 2)
 gpmb_on_pc <-
-function(resclv,X,K=NULL,axeh=1,axev=2,label=FALSE,v_colors=NULL,v_symbol=FALSE) {
+function(resclv,X,K=NULL,axeh=1,axev=2,label=FALSE,v_colors=NULL,v_symbol=FALSE,beside=FALSE) {
   if (!inherits(resclv, c("clv","clvkmeans","lclv"))) 
     stop("non convenient objects")
   if(is.null(resclv$param$K)) { 
@@ -42,27 +43,57 @@ function(resclv,X,K=NULL,axeh=1,axev=2,label=FALSE,v_colors=NULL,v_symbol=FALSE)
      reseig<-eigen(X%*%t(X)/n)
      valp<-100*reseig$values[1:A]/sum(reseig$values)
      coordvar<-t(X)%*%reseig$vectors[,1:A]/sqrt(n)
+     coordind<-reseig$vectors[,1:A]%*%diag(sqrt(reseig$values[1:A]))
   } else {
      reseig<-eigen(t(X)%*%X/(n))
      valp<-100*reseig$values[1:A]/sum(reseig$values)
      coordvar<-reseig$vectors[,1:A]%*%diag(sqrt(reseig$values[1:A]))
+     coordind<-X%*%reseig$vectors[,1:A]/sqrt(n)
   }
- #re-orientation of the PC so that the maximal nb of var have positive coordinate alonf this axe
+ #re-orientation of the PC so that the maximal nb of var have positive coordinate along this axe
   for (a in 1:A) {
       if (sign(mean(coordvar[,a]))==(-1)) coordvar[,a]=coordvar[,a]*(-1)
   }
     
-  if (resclv$param$sX) {
-    xmin=-1
-    xmax=1
-    ymin=-1
-    ymax=1
-  } else {
-    xmin=min(min(coordvar[,axeh]),-max(coordvar[,axeh]))
-    xmax=max(max(coordvar[,axeh]),-min(coordvar[,axeh]))
-    ymin=min(min(coordvar[,axev]),-max(coordvar[,axev]))
-    ymax=max(max(coordvar[,axev]),-min(coordvar[,axev]))
-  }
+par(pty="s")
+
+### PCA biplot
+# scaling factor
+vp<-(coordind[,axeh]^2+coordind[,axev]^2)
+lp=max(vp)
+vv<-(coordvar[,axeh]^2+coordvar[,axev]^2)
+lv=max(vv)
+f=sqrt(lp/lv)
+#plot
+plot(c(coordvar[,axeh]*f,coordind[,axeh]),c(coordvar[,axev]*f,coordind[,axev]),type="n",
+     xlab=paste("Dim ",axeh,"(",round(valp[axeh],2),"%)"),
+     ylab=paste("Dim ",axev,"(",round(valp[axev],2),"%)"),
+     main="PCA biplot")
+arrows(0,0,coordvar[,axeh]*f,coordvar[,axev]*f,length=0,lwd=0.5,col="gray")
+posi=rep(1,n)
+posi[which(coordind[,axeh]>max(c(coordvar[,axeh]*f,coordind[,axeh]))*0.8)]=2
+posi[which(coordind[,axeh]<min(c(coordvar[,axeh]*f,coordind[,axeh]))*0.8)]=4
+posi[which(coordind[,axev]>max(c(coordvar[,axev]*f,coordind[,axev]))*0.8)]=1
+posi[which(coordind[,axev]<min(c(coordvar[,axev]*f,coordind[,axev]))*0.8)]=3
+text(coordind[,axeh],coordind[,axev],labels=rownames(X),pos=posi) 
+#autoLab(coordind[,axeh],coordind[,axev],labels=rownames(X),cex=1.5) 
+abline(h=0,v=0)
+#####
+
+
+
+if (resclv$param$sX) {
+  xmin=-1
+  xmax=1
+  ymin=-1
+  ymax=1
+} else {
+  xmin=min(min(coordvar[,axeh]),-max(coordvar[,axeh]))
+  xmax=max(max(coordvar[,axeh]),-min(coordvar[,axeh]))
+  ymin=min(min(coordvar[,axev]),-max(coordvar[,axev]))
+  ymax=max(max(coordvar[,axev]),-min(coordvar[,axev]))
+}
+
   
   clean_var<-NULL
   if(resclv$param$strategy=="kplusone")  clean_var<-which(clusters==0)
@@ -78,7 +109,7 @@ function(resclv,X,K=NULL,axeh=1,axev=2,label=FALSE,v_colors=NULL,v_symbol=FALSE)
   
   
 
-  par(pty="s")
+ 
   colpart<-NULL
   symbpart<-NULL
   symbpart<-20
@@ -93,6 +124,7 @@ function(resclv,X,K=NULL,axeh=1,axev=2,label=FALSE,v_colors=NULL,v_symbol=FALSE)
     
   }
   
+if (beside==FALSE) {
   plot(coordvar[,c(axeh,axev)],col=colpart,pch=symbpart,cex.axis=0.7,cex.lab=0.7,
        xlab=paste("Dim ",axeh," (",round(valp[axeh],2),"%)"), 
        ylab=paste("Dim ",axev," (",round(valp[axev],2),"%)"), xlim=c(xmin,xmax), ylim=c(ymin,ymax))
@@ -111,4 +143,56 @@ function(resclv,X,K=NULL,axeh=1,axev=2,label=FALSE,v_colors=NULL,v_symbol=FALSE)
   } else {
     legend("topleft",paste("G",1:K,sep=""),col=v_colors[1:K],title="Groups", lty="solid",  seg.len=0.6,cex=0.7,ncol=ncol) 
   }
+}
+
+
+if (beside==TRUE) {
+  if (length(clean_var)==0) KK=K
+  if (length(clean_var)>0) KK=K+1
+  NL=ceiling(KK/3)
+  par(mfrow=c(NL,3))
+  case=levels(as.factor(colpart))
+  for(k in 1:K) {
+    who=which(clusters==k)
+    plot(coordvar[who,c(axeh,axev)],col=colpart[who],pch=symbpart[who],cex.axis=0.7,cex.lab=0.7,
+       xlab=paste("Dim ",axeh," (",round(valp[axeh],2),"%)"), 
+       ylab=paste("Dim ",axev," (",round(valp[axev],2),"%)"), xlim=c(xmin,xmax), ylim=c(ymin,ymax))
+   arrows(rep(0,p), rep(0,p), coordvar[who,axeh], coordvar[who,axev], col= colpart[who], angle=0)
+   if(label) {
+    for (j in who) {
+      if(coordvar[j,axev]>0) text(coordvar[j,axeh], coordvar[j,axev],colnames(X)[j],pos=3,cex=0.7,col=colpart[j])
+      if(coordvar[j,axev]<0) text(coordvar[j,axeh], coordvar[j,axev],colnames(X)[j],pos=1,cex=0.7,col=colpart[j])
+    }
+   }
+  abline(h=0,v=0)
+  if (resclv$param$sX) symbols(0, 0, circles = 1, inches = FALSE, add = TRUE) 
+  if(v_symbol) {
+    legend("topleft",paste("G",k,sep=""),col=v_colors[k], lty="solid", pch=k, seg.len=0.6,cex=1)     
+  } else {
+    legend("topleft",paste("G",k,sep=""),col=v_colors[k], lty="solid",  seg.len=0.6,cex=1) 
+  }
+  }
+  # for the "others"
+  who=clean_var
+  plot(coordvar[who,c(axeh,axev)],col=colpart[who],pch=symbpart[who],cex.axis=0.7,cex.lab=0.7,
+       xlab=paste("Dim ",axeh," (",round(valp[axeh],2),"%)"), 
+       ylab=paste("Dim ",axev," (",round(valp[axev],2),"%)"), xlim=c(xmin,xmax), ylim=c(ymin,ymax))
+  arrows(rep(0,p), rep(0,p), coordvar[who,axeh], coordvar[who,axev], col= colpart[who], angle=0)
+  if(label) {
+    for (j in who) {
+      if(coordvar[j,axev]>0) text(coordvar[j,axeh], coordvar[j,axev],colnames(X)[j],pos=3,cex=0.7,col=colpart[j])
+      if(coordvar[j,axev]<0) text(coordvar[j,axeh], coordvar[j,axev],colnames(X)[j],pos=1,cex=0.7,col=colpart[j])
+    }
+  }
+  abline(h=0,v=0)
+  if (resclv$param$sX) symbols(0, 0, circles = 1, inches = FALSE, add = TRUE) 
+  if(v_symbol) {
+    legend("topleft","others",col="gray", lty="solid", pch=k, seg.len=0.6,cex=1)     
+  } else {
+    legend("topleft","others",col="gray", lty="solid",  seg.len=0.6,cex=1) 
+  }
+}
+
+par(mfrow=c(1,1))
+par(pty="m")
 }

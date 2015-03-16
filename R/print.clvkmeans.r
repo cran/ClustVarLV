@@ -6,7 +6,7 @@
 #' @param ... further arguments passed to or from other methods
 #' 
 #' @seealso CLV_kmeans
-#' @S3method print clvkmeans
+#' @export print clvkmeans
 print.clvkmeans =  function (x, ...) 
 {
   if (!inherits(x, "clvkmeans")) 

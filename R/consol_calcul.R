@@ -9,15 +9,22 @@ function(method,X,EXTr,Xr,EXTu,Xu,ind)
   
   if (method==1){
     if ((EXTr==0)&(EXTu==0)) { 
-      if ( dim(Xk)[1] > dim(Xk)[2] ) {
-        vp=eigen(t(Xk)%*%Xk)
-        comp<-Xk%*%vp$vectors[,1]%*%(vp$values[1])^(-1/2)
-        CLVcomp<-Xk%*%vp$vectors[,1]
-      }  else {
-        vp <- eigen(Xk %*% t(Xk))
-        comp<- vp$vectors[,1]
-        CLVcomp<- vp$vectors[,1]*sqrt(vp$values[1])
-      }
+       if ( dim(Xk)[1] > dim(Xk)[2] ) {
+         vp=eigen(t(Xk)%*%Xk)
+#         vp=svd(t(Xk)%*%Xk,nu=1,nv=1)
+         comp<-Xk%*%vp$vectors[,1]%*%(vp$values[1])^(-1/2)
+#          comp<-Xk%*%vp$u%*%(vp$d)^(-1/2)
+         CLVcomp<-Xk%*%vp$vectors[,1]
+#          CLVcomp<-Xk%*%vp$u
+       }  else {
+         vp <- eigen(Xk %*% t(Xk))
+#          vp=svd(Xk %*% t(Xk),nu=1,nv=1)
+         comp<- vp$vectors[,1]
+#          comp<- vp$u
+         CLVcomp<- vp$vectors[,1]*sqrt(vp$values[1])
+#          CLVcomp<- vp$u*sqrt(vp$d)
+       }
+
       jj<-which.max(cor(CLVcomp,Xk))  # modification of the sign of CLVcomp so that it is positively correlated with the closest variable  
       if (cor(CLVcomp,Xk[,jj])<0) CLVcomp=(-1)*CLVcomp
       critere<-  vp$values[1] /(n-1)

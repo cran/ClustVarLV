@@ -6,7 +6,7 @@
 #' @param ... further arguments passed to or from other methods
 #' 
 #' @seealso CLV
-#' @S3method print clv
+#' @export print clv
 print.clv =  function (x, ...) 
 {
   if (!inherits(x, "clv")) 

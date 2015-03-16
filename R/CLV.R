@@ -7,20 +7,21 @@
 #' If external variables are used, define either Xr or Xu, but not both.
 #' Use the LCLV function when Xr and Xu are simultaneously provided.
 #' 
-#' @param X The matrix of variables to be clustered
-#' @param Xu The external variables associated with the columns of X
-#' @param Xr The external variables associated with the rows of X
-#' @param method The criterion to be use in the cluster analysis.  \cr
+#' @param X : The matrix of variables to be clustered
+#' @param Xu : The external variables associated with the columns of X
+#' @param Xr : The external variables associated with the rows of X
+#' @param method : The criterion to be use in the cluster analysis.  \cr
 #'        1 : the squared covariance is used as a measure of proximity (directional groups). \cr    
 #'        2 : the covariance is used as a measure of proximity (local groups)
-#' @param sX TRUE/FALSE : standardization or not of the columns X (TRUE by default)\cr
+#' @param sX , TRUE/FALSE : standardization or not of the columns X (TRUE by default)\cr
 #'        (predefined -> cX = TRUE : column-centering of X)
-#' @param sXr TRUE/FALSE : standardization or not of the columns Xr (FALSE by default)\cr
+#' @param sXr , TRUE/FALSE : standardization or not of the columns Xr (FALSE by default)\cr
 #'        (predefined -> cXr    = TRUE : column-centering of Xr)
-#' @param sXu TRUE/FALSE : standardization or not of the columns Xu (FALSE by default)\cr
+#' @param sXu , TRUE/FALSE : standardization or not of the columns Xu (FALSE by default)\cr
 #'        (predefined -> cXu= FALSE : no centering, Xu considered as a weight matrix)
-#' @param nmax maximum number of partitions for which the consolidation will be done (by default nmax=20)
-#' @param graph TRUE  : dendrogram and evolution of the aggregation criterion before and after consolidation (default)
+#' @param nmax : maximum number of partitions for which the consolidation will be done (by default nmax=20)
+#' @param maxiter : maximum number of iterations allowed for the consolidation/partitioning algorithm (by default maxiter=20)
+#' @param graph , TRUE  : dendrogram and evolution of the aggregation criterion before and after consolidation (default)
 #'        FALSE : no graphs
 #' 
 #' 
@@ -51,12 +52,26 @@
 #' #local groups with external variables Xr
 #' resclvYX <- CLV(X = apples_sh$pref, Xr = apples_sh$senso, 
 #'                 method = 2, sX = FALSE, sXr = TRUE, graph = TRUE)
-CLV <- function(X,Xu=NULL,Xr=NULL,method,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=20,graph=TRUE)
+CLV <- function(X,Xu=NULL,Xr=NULL,method,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=20,maxiter=20,graph=TRUE)
 {
  if(method!=1 & method!=2) stop("method should be 1 or 2")
  cX=TRUE
  cXr=TRUE
- cXu=FALSE 
+ cXu=FALSE
+ 
+ # verification if some variables have constant values (standard deviation=0)
+ who<-which(apply(X,2,sd)==0)
+ if ((length(who)>0)&(sX==TRUE)) {
+   listwho<-c(": ")
+   for (r in 1:length(who)) {listwho=paste(listwho,colnames(X)[who[r]],",")}
+   stop("The variables",listwho," have constant values (standard deviation=0). Please remove these variables from the X matrix.")
+ }
+ if (length(who)>0) {
+   listwho<-c(": ")
+   for (r in 1:length(who)) {listwho=paste(listwho,colnames(X)[who[r]],",")}
+   warning("The variables",listwho," have constant values (standard deviation=0). Please remove these variables from the X matrix.")
+ }
+ 
  X<- scale(X, center=cX, scale=sX)
  p <- ncol(X) 
  n <- nrow(X)
@@ -74,17 +89,18 @@ CLV <- function(X,Xu=NULL,Xr=NULL,method,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=20,gra
    Xu<- scale(Xu, center=cXu, scale=sXu) 
    ptilde <- dim(Xu)[1]  
    m<-dim(Xu)[2] 
-   if (p != ptilde) {stop(" the number of consumers in X and Xu must are not the same") }                      
-   if (EXTr==1) {stop("this procedure doesn't allow Xr and Xu to be defined simultenaously. Use l-clv instead")}
+   if (p != ptilde) {stop("The number of consumers in X and Xu must are not the same") }                      
+   if (EXTr==1) {stop("This procedure doesn't allow Xr and Xu to be defined simultenaously. Use LCLV instead")}
  }
-
+ 
+ 
  groupes <- 1:p                     
  fusions <- -groupes
  crit<-crit_init(method,X,EXTr,Xr,EXTu,Xu)
  inertie <- sum(crit)
  sbegin <- sum(crit) 
  ncluster <- p
- print(paste('initial value of the criterion : ',round(inertie,2)))
+ #print(paste('initial value of the criterion : ',round(inertie,2)))
  results = matrix(0,p-1,9)
  resultscc <- list()
  critstep <-  matrix(nrow=p, ncol=p)
@@ -198,8 +214,7 @@ CLV <- function(X,Xu=NULL,Xr=NULL,method,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=20,gra
     cc_consol <- t(t(groupes))
     K <- ncluster
     T<-c()   
-    maxiter=20
-  
+    
    for (i in 1:maxiter) {       
 
         critere <-rep(0,K)

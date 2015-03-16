@@ -46,6 +46,13 @@ function(X,Xr,Xu,ccX=FALSE,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=20,graph=TRUE)
  cX=TRUE
  cXr=TRUE
  cXu=FALSE
+ # verification if some variables have constant values (standard deviation=0)
+ who<-which(apply(X,2,sd)==0)
+ if (length(who)>0) {
+   listwho<-c(": ")
+   for (r in 1:length(who)) {listwho=paste(listwho,colnames(X)[who[r]],",")}
+   stop("The variables",listwho," have constant values (standard deviation=0). Please remove these variables from the X matrix.")
+ }
  
  if (ccX==T) {
     X<- X-matrix(1,n,1)%*%colMeans(X)-rowMeans(X)%*%matrix(1,1,p)+mean(X)*matrix(1,n,p)
@@ -84,7 +91,7 @@ function(X,Xr,Xu,ccX=FALSE,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=20,graph=TRUE)
  inertie <- sum(crit)
  sbegin <- sum(crit) 
  ncluster <- p        # nb clusters
- print(paste('initial value of the criterion : ',round(inertie,2)))
+ #print(paste('initial value of the criterion : ',round(inertie,2)))
  results = matrix(0,p-1,9)
  resultscc <- list()
  
@@ -282,7 +289,7 @@ function(X,Xr,Xu,ccX=FALSE,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=20,graph=TRUE)
  names(resultscc) = paste("partition",1:nmax,sep="")
  
  resultscc$tabres=results
- resultscc$param<-list(n = n, p = p,nmax = nmax,ccX=ccX,sX=sX,sXr=sXr,cXu=cXu,sXu=sXu)
+ resultscc$param<-list(n = n, p = p,nmax = nmax,ccX=ccX,sX=sX,sXr=sXr,cXu=cXu,sXu=sXu,strategy="none")
  
  resultscah=list(labels=colnames(X),inertie=inertie, height=delta, merge=hmerge,order=ordr )    
  mytot<-resultscah  

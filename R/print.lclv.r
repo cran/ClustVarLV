@@ -6,7 +6,7 @@
 #' @param ... further arguments passed to or from other methods
 #' 
 #' @seealso LCLV
-#' @S3method print lclv
+#' @export print lclv
 print.lclv =  function (x, ...) 
 {
   if (!inherits(x, "lclv")) 

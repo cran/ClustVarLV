@@ -102,7 +102,7 @@ function(method,X,EXTr,Xr,EXTu,Xu,ind,max.iter=20, eps = 0.001,rlevel)
       beta = soft(cova,para)
       
       
-      temp <- beta   # pour verifier la convergence
+      temp <- beta   # in order to check convergence
       temp <- temp/normvec(temp)
       k <- 0
       diff <- 1
@@ -161,7 +161,7 @@ function(method,X,EXTr,Xr,EXTu,Xu,ind,max.iter=20, eps = 0.001,rlevel)
 
       
   }
-  ###fin de method=1 #########################################################################################
+  ###end of method=1 #########################################################################################
   
   
   
@@ -206,7 +206,7 @@ function(method,X,EXTr,Xr,EXTu,Xu,ind,max.iter=20, eps = 0.001,rlevel)
        if ((EXTu==0)& (EXTr==0))  {
          Ck = compnorm
        } else {
-         # mettre en message et arreter la procédure
+         # message. procedure stopped
        }
     
     
@@ -225,7 +225,7 @@ function(method,X,EXTr,Xr,EXTu,Xu,ind,max.iter=20, eps = 0.001,rlevel)
         k <- k + 1
         
         if ((EXTr==0)&(EXTu==0)){ 
-          # beta contient des 1 et des 0
+          # beta includes 0 or 1
           beta[which(beta!=0)]=1
           b = sum(beta)
           if (b==0) b = 1

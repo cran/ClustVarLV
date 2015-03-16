@@ -5,6 +5,9 @@
 #' Moreover external information collected on the observations or on the variables may be introduced.
 #' 
 #' The initalization can be made at random, repetitively, or can be defined by the user.
+#' 
+#' The parameter "strategy" makes it possible to choose a strategy for setting aside variables
+#' that do not fit into the pattern of any cluster.   
 #'
 #' @param X The matrix of the variables to be clustered
 #' @param Xu The external variables associated with the columns of X
@@ -19,12 +22,12 @@
 #' @param sXu TRUE/FALSE : standardization or not of the columns Xu (FALSE by default)\cr
 #'        (predefined -> cXu= FALSE : no centering, Xu considered as a weight matrix)
 #' @param init a number i.e.  the size of the partition, K,
-#'        or  a vector of INTEGERS i.e. the group membership of each var in the initial parition (integer between 1 and K)
+#'        or  a vector of INTEGERS i.e. the group membership of each variable in the initial partition (integer between 1 and K)
 #' @param iter.max maximal number of iteration for the consolidation (20 by default)
-#' @param nstart nb of random initialisations in the case of init = a number  (1 by default)
-#' @param strategy "none", or "kplusone" (an additional cluster for the noise variables, default),
+#' @param nstart nb of random initialisations in the case where init is a number  (100 by default)
+#' @param strategy "none" (by default), or "kplusone" (an additional cluster for the noise variables),
 #'        or "sparselv" (zero loadings for the noise variables)
-#' @param rho a threshold of correlation between 0 and 1 (0 by default)
+#' @param rho a threshold of correlation between 0 and 1 (0.3 by default)
 #' 
 #' @return \item{tabres}{ 
 #'         The value of the clustering criterion at convergence.\cr
@@ -39,12 +42,26 @@
 #' resclvkmYX <- CLV_kmeans(X = apples_sh$pref, Xr = apples_sh$senso, 
 #'                          method = 2, sX = FALSE, sXr = TRUE, init = 2, nstart = 20)
 CLV_kmeans <- function(X,Xu=NULL,Xr=NULL,method,sX=TRUE,sXr=FALSE,sXu=FALSE,
-                       init, iter.max=20, nstart=1,strategy="none",rho=0)
+                       init, iter.max=20, nstart=100,strategy="none",rho=0.3)
 {
   if(method!=1 & method!=2) stop("method should be 1 or 2")
   cX=TRUE
   cXr=TRUE
   cXu=FALSE
+  
+  # verification if some variables have constant values (standard deviation=0)
+  who<-which(apply(X,2,sd)==0)
+  if ((length(who)>0)&(sX==TRUE)) {
+    listwho<-c(": ")
+    for (r in 1:length(who)) {listwho=paste(listwho,colnames(X)[who[r]],",")}
+    stop("The variables",listwho," have constant values (standard deviation=0). Please remove these variables from the X matrix.")
+  }
+  if (length(who)>0) {
+    listwho<-c(": ")
+    for (r in 1:length(who)) {listwho=paste(listwho,colnames(X)[who[r]],",")}
+    warning("The variables",listwho," have constant values (standard deviation=0). Please remove these variables from the X matrix.")
+  }
+  
   X<- scale(X, center=cX, scale=sX)
   p <- ncol(X)
   n <- nrow(X)  
