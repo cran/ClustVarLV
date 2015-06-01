@@ -13,15 +13,15 @@
 #' @param Xu The external variables associated with the columns of X
 #' @param Xr The external variables associated with the rows of X
 #' @param method The criterion to use in the cluster analysis.\cr 
-#'        1 : the squared covariance is used as a measure of proximity (directional groups).\cr
-#'        2 : the covariance is used as a measure of proximity (local groups)
+#'        1 or "directional" : the squared covariance is used as a measure of proximity (directional groups). \cr    
+#'        2 or "local"       : the covariance is used as a measure of proximity (local groups)
 #' @param sX TRUE/FALSE : standardization or not of the columns X (TRUE by default)\cr
 #'        (predefined -> cX = TRUE : column-centering of X)
 #' @param sXr TRUE/FALSE : standardization or not of the columns Xr (FALSE by default)\cr
 #'        (predefined -> cXr    = TRUE : column-centering of Xr)
 #' @param sXu TRUE/FALSE : standardization or not of the columns Xu (FALSE by default)\cr
 #'        (predefined -> cXu= FALSE : no centering, Xu considered as a weight matrix)
-#' @param init a number i.e.  the size of the partition, K,
+#' @param clust : a number i.e.  the size of the partition, K,
 #'        or  a vector of INTEGERS i.e. the group membership of each variable in the initial partition (integer between 1 and K)
 #' @param iter.max maximal number of iteration for the consolidation (20 by default)
 #' @param nstart nb of random initialisations in the case where init is a number  (100 by default)
@@ -39,12 +39,20 @@
 #' @seealso CLV, LCLV
 #' @examples data(apples_sh)
 #' #local groups with external variables Xr 
-#' resclvkmYX <- CLV_kmeans(X = apples_sh$pref, Xr = apples_sh$senso, 
-#'                          method = 2, sX = FALSE, sXr = TRUE, init = 2, nstart = 20)
+#' resclvkmYX <- CLV_kmeans(X = apples_sh$pref, Xr = apples_sh$senso,method = "local",
+#'           sX = FALSE, sXr = TRUE, clust = 2, nstart = 20)
+#' @export                        
+#'                          
 CLV_kmeans <- function(X,Xu=NULL,Xr=NULL,method,sX=TRUE,sXr=FALSE,sXu=FALSE,
-                       init, iter.max=20, nstart=100,strategy="none",rho=0.3)
+                       clust, iter.max=20, nstart=100,strategy="none",rho=0.3)
 {
-  if(method!=1 & method!=2) stop("method should be 1 or 2")
+  
+  if (method=="directional") method=1
+  if (method=="local") method=2
+  if(method!=1 & method!=2) stop("method should be 1/directional or 2/local")
+
+  if (missing(clust))
+    stop("'clust' must be an integer (the number of clusters) or a vector of vector a vector of intergers (the initial partition)")
   cX=TRUE
   cXr=TRUE
   cXu=FALSE
@@ -95,10 +103,9 @@ CLV_kmeans <- function(X,Xu=NULL,Xr=NULL,method,sX=TRUE,sXr=FALSE,sXu=FALSE,
   crit<-crit_init(method,X,EXTr,Xr,EXTu,Xu)
   sbegin <- sum(crit)  
   
- if (missing(init))
-     stop("'init' must be a number or a vector")
- if (length(init) == 1) {
-     K <- init
+ 
+ if (length(clust) == 1) {
+     K <- clust
      out<-mat_init(X,EXTr,Xr,EXTu,Xu,K)
      comp<-out$comp
      comp <- as.matrix(X[,sort(sample.int(p, K))]) # K columns of X chosen at random
@@ -107,16 +114,16 @@ CLV_kmeans <- function(X,Xu=NULL,Xr=NULL,method,sX=TRUE,sXr=FALSE,sXu=FALSE,
      groupes <- as.factor(consol_affect(method,X,Xr,Xu,EXTr,EXTu,comp,a,u))
   } else {
      nstart = 1
-     if (!is.numeric(init))
-         stop("init must be a vector of integers")
-     groupes <- as.factor(init)
+     if (!is.numeric(clust))
+         stop("clust must be a vector of integers")
+     groupes <- as.factor(clust)
      K <- length(levels(groupes))
      if (p < K)
          stop("more cluster's centers than variables")
-     if (length(which(init > K)) > 0)
+     if (length(which(clust > K)) > 0)
          stop("clusters must be numbered from 1 to K")
      if (p != length(groupes))
-         stop("the length of init must be equal to the number of variables")
+         stop("the length of clust must be equal to the number of variables")
      out<-mat_init(X,EXTr,Xr,EXTu,Xu,K)
      comp<-out$comp
      if (EXTr==1)  {a<-out$a}
@@ -141,12 +148,12 @@ CLV_kmeans <- function(X,Xu=NULL,Xr=NULL,method,sX=TRUE,sXr=FALSE,sXu=FALSE,
   #####################################################################
 
 
-param<-list(method=method,n = n, p = p,K = K,nstart = nstart,EXTu=EXTu,EXTr=EXTr,
+param<-list(X=X,method=method,n = n, p = p,K = K,nstart = nstart,EXTu=EXTu,EXTr=EXTr,
             sX=sX,sXr=sXr,cXu=cXu,sXu=sXu,strategy=strategy,rho=rho)
 listcc= c(listcc, list(param=param)) 
 
 
-class(listcc) = "clvkmeans"
+class(listcc) = "clv"
 # if (strategy=="sparselv") class(listcc) = "sparselv"
 # if (strategy=="kplusone") class(listcc) = "kplusone"
 

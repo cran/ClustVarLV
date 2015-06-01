@@ -1,11 +1,12 @@
 consol_calcul_s <-
-function(method,X,EXTr,Xr,EXTu,Xu,ind,max.iter=20, eps = 0.001,rlevel)
+function(method,X,EXTr,Xr,EXTu,Xu,ind,max.iter=20, eps = 0.01,rlevel)
 #
 {
   n<-nrow(X)
   p<-ncol(X)
   Xk<-as.matrix(X[,ind])
   pk<-length(ind)
+  
   
   dur <- function(a,para)
   {
@@ -15,9 +16,9 @@ function(method,X,EXTr,Xr,EXTu,Xu,ind,max.iter=20, eps = 0.001,rlevel)
   }
   soft <- function(a,para)
   {    
-    b <- sort(abs(a))
+    #b <- sort(abs(a))?
     b <- abs(a) - para
-    b <- (b + abs(b))/2
+    b <- (b + abs(b))/2 
     b <- sign(a) * b
     b 
   }
@@ -41,7 +42,7 @@ function(method,X,EXTr,Xr,EXTu,Xu,ind,max.iter=20, eps = 0.001,rlevel)
       comp = svd$u[,1]
       CLVcomp = comp * (svd$d[1])
       critere = (svd$d[1])^2/(n-1)
-      jj<-which.max(cor(CLVcomp,Xk))  # modification of the sign of CLVcomp so that it is positively correlated with the closest variable  
+      jj<-which.max(abs(cor(CLVcomp,Xk)))  # modification of the sign of CLVcomp so that it is positively correlated with the closest variable  
       if (cor(CLVcomp,Xk[,jj])<0) CLVcomp=(-1)*CLVcomp
       res<-list(comp=CLVcomp,critere=critere)
     }
@@ -71,37 +72,13 @@ function(method,X,EXTr,Xr,EXTu,Xu,ind,max.iter=20, eps = 0.001,rlevel)
 #     }
 #     
     
-    
-   
-      dur <- function(a,para)
-      {
-        b = a
-        b[which((abs(a) - para)<0)] = 0
-        b
-      }
-      soft <- function(a,para)
-      {    
-          b <- sort(abs(a))
-          b <- abs(a) - para
-          b <- (b + abs(b))/2
-          b <- sign(a) * b
-          b 
-      }
-      normvec <- function(a){     
-        b = sqrt(sum(a^2))
-        if (b==0) b = 1
-        b
-      }
-      
-    
       Ck=comp     
       cova = cov(Xk,Ck)  
      
       para = rlevel*sqrt(diag(var(Xk))/(n-1))
       #beta = dur(cova,para)
       beta = soft(cova,para)
-      
-      
+            
       temp <- beta   # in order to check convergence
       temp <- temp/normvec(temp)
       k <- 0
@@ -127,12 +104,12 @@ function(method,X,EXTr,Xr,EXTu,Xu,ind,max.iter=20, eps = 0.001,rlevel)
 #           Ck = P%*%B%*%alpha/normvec(P%*%B%*%alpha)
 #         }
                 
-        cova = cov(Xk,Ck)
+        cova = cov(Xk,Ck)                                                
 #       beta = dur(cova,para)
         beta = soft(cova,para)
 
         beta2 = beta/normvec(beta)
-        diff <- max(abs(beta2 - temp))
+        diff <- mean(abs(beta2 - temp))
         temp <- beta2
         
       }
@@ -143,15 +120,12 @@ function(method,X,EXTr,Xr,EXTu,Xu,ind,max.iter=20, eps = 0.001,rlevel)
       res$loading = beta
  
       res$comp = Xk%*%beta     
-                                           
-    
 
-    
-        if ((EXTr==0)&(EXTu==0)) {
+       if ((EXTr==0)&(EXTu==0)) {
           compnorm=res$comp/normvec(res$comp)
           res$critere<-(n-1)*sum(cov(Xk,compnorm)^2)
         }
-        
+      
     
     
 #        if ((EXTr==1)&(EXTu==0)) res$critere = sum((Xrk%*%beta)^2)/(n-1)   
@@ -262,7 +236,7 @@ function(method,X,EXTr,Xr,EXTu,Xu,ind,max.iter=20, eps = 0.001,rlevel)
         if ((EXTr==0)&(EXTu==0))  beta[which(beta!=0)]=1
 
         beta2 = beta
-        diff <- max(abs(beta2 - temp))
+        diff <- mean(abs(beta2 - temp))
         temp <- beta2
       }
        

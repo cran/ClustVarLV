@@ -52,6 +52,7 @@ pcritav=0
 for (i in 1:iter.max) {
 
   critere <-rep(0,K+1)
+  comp<-matrix(0,nrow(X),K)
   groupes_tmp<-cc_consol[,i] 
  
   for (k in 1:K) { 
@@ -107,6 +108,7 @@ crit_trials<-sum(critere)
           for (i in 1:iter.max) {
         
             critere2 <-rep(0,K+1)
+            comp2<-matrix(0,nrow(X),K)
             groupes_tmp2<-cc_consol2[,i]
             for (k in 1:K) {
               ind2<-which(groupes_tmp2==k)

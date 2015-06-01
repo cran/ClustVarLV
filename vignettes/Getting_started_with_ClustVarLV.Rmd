@@ -1,0 +1,185 @@
+---
+title: "Getting started with ClustVarLV. version 1.4.0"
+author: "Evelyne Vigneau"
+date: "2015-05-29"
+output: rmarkdown::pdf_document
+#rmarkdown::pdf_document; rmarkdown::html_document
+vignette: >
+  %\VignetteIndexEntry{Getting started with ClustVarLV. version 1.4.0}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+ 
+#
+#
+# beginners with ClustVarLV
+
+The ClustVarLV package is dedicated to the CLV method for the Clustering of Variables Around Latent Variables (Vigneau & Qannari,2003), 
+
+```{r}
+library(ClustVarLV)
+```
+
+
+For illustration, we consider the "apples\_sh" dataset which includes the sensory characterization and consumers preference for 12 varieties of apples (Daillant-Spinnler et al.,1996). 
+
+```{r}
+data(apples_sh)
+# 43 sensory attributes of 12 varieties of apple from southern hemisphere
+senso<-apples_sh$senso
+# Scores of liking given fy 60 consumers for each of the 12 varieties of apple
+pref<-apples_sh$pref
+```
+
+
+## Clustering of the sensory attributes 
+
+The aim is to find groups of sensory attributes correlated, or anti-correlated, to each others. Herein "directional" groups are sought.
+Each group is associated with a latent component which makes it possible to identify the underlying sensory dimensions.
+
+```{r, results="hide"}
+resclv_senso <- CLV(X = senso, method = "directional", sX = TRUE)
+# option sX=TRUE means that each attribute will be auto-scaled (standard deviation =1)
+
+# Print of the 'clv' object 
+print(resclv_senso)
+```
+
+```{r, fig.width=3, fig.height=3}
+# Dendrogram of the CLV hierarchical clustering algorithm :
+plot(resclv_senso,"dendrogram")
+# Graph of the variation of the clustering criterion
+plot(resclv_senso,"delta")
+```
+
+The graph of the variation of the clustering criterion between a partition into K clusters and a partition into (K-1) clusters (after consolidation) is useful for determining the number of clusters to be retained.
+Because the criterion clearly jumps when passing from 4 to 3 groups,  a partition into 4 groups is retained.
+
+```{r}
+# Summary the CLV results for a partition into 4 groups
+summary_clv(resclv_senso,K=4)
+```
+
+The function plot\_var() allows us to describe the groups of variables into a two dimensional space obtained by Principal Components Analysis. 
+Several options are available for the choice of the axes, for adding labels, producing a plot without colours but symbols, having only one plot or a plot by groups of variables.
+
+```{r, fig.width=4, fig.height=4}
+# Representation of the group membership for a partition into 4 groups
+plot_var(resclv_senso,K=4,label=T,cex.lab=0.8)
+```
+or
+```{r, fig.width=6, fig.height=6}
+plot_var(resclv_senso,K=4,beside=T)
+```
+
+Additional functions :
+```{r, results="hide"}
+# Extract the group membership of each variable
+get_partition(resclv_senso,K=4,type="vector")
+# or 
+get_partition(resclv_senso,K=4,type="matrix")
+
+# Extract the group latent variables 
+get_comp(resclv_senso,K=4)
+```
+
+
+## Clustering of the consumers' preference data  
+
+The aim is to find segments of consumers. Herein "local" groups are sought.
+Each group latent variable represents a synthetic direction of preference.
+If, simultaneously, the aim is to explain these directions of preference by means of the sensory attributes of the products, the sensory data has to be included as external data.
+
+
+
+```{r, results="hide"}
+res.segext<- CLV(X = pref, Xr = senso, method = "local", sX=TRUE, sXr = TRUE)
+
+print(res.segext)
+```
+
+```{r, fig.width=3, fig.height=3}
+plot(res.segext,"dendrogram")
+plot(res.segext,"delta") 
+```
+
+Two or three segments may be explored. 
+To Compare the partitions into two or three segments :
+```{r}
+table(get_partition(res.segext,K=2),get_partition(res.segext,K=3))
+```
+
+Each latent variable being a linear combination of the external variables (sensory), it is possible to extract the associated loadings
+```{r}
+get_load(res.segext,K=3)
+```
+
+
+## Using the CLV_kmeans function
+
+This procedure is less time consuming when the number of variables is large.
+The number of clusters needs to be fixed (e.g.3). 
+
+The initialization of the algorithm  can be made at random, "nstart" times :
+```{r}
+res.clvkm.rd<-CLV_kmeans(X = pref, Xr = senso, method = "local", sX=TRUE,
+                         sXr = TRUE, clust=3, nstart=100)
+```
+or the initialization can be defined by the user, for instance on the basis of the clusters obtained by cutting the CLV dendrogram to get 3 clusters
+```{r}
+res.clvkm.hc<-CLV_kmeans(X = pref, Xr = senso, method = "local", sX=TRUE,
+                        sXr = TRUE, clust=res.segext[[3]]$clusters[1,])
+```
+
+It is possible to compare the partitions according to the procedure used :
+```{r}
+table(get_partition(res.segext,K=3),get_partition(res.clvkm.hc,K=3)) 
+```
+In this case, the CLV solution is the same that the CLV_kmeans solution with an initialization based on the partition obtained by cutting the dendrogram.
+
+```{r}
+table(get_partition(res.segext,K=3),get_partition(res.clvkm.rd,K=3)) 
+```
+Partitions are very close.
+
+#
+#
+#
+#
+#
+#
+#
+
+# Warning : Changes with respect to the earlier versions of the ClustVarLV package
+
+The changes are illustrated on the basis of the examples given above.
+
+------------------------------------------------------------------------------------------------
+from version 1.4.0                                   for earlier versions
+--------------------------------------------         --------------------------------------------  
+resclv\_senso <- CLV(X = senso,method =              resclv\_senso <- CLV(X = senso,method=1,  
+"directional", sX = TRUE)                                           sX = TRUE, graph=TRUE)
+
+plot(resclv\_senso,"dendrogram");        
+      plot(resclv\_senso,"delta")	                                                                           
+
+summary(resclv\_senso,K=4)                           descript\_gp(resclv\_senso,X=senso,K=4)
+
+plot\_var(resclv\_senso,K=4)                         gpmb\_on\_pc(resclv\_senso,X=senso,K=4)
+
+get\_partition(resclv\_senso,K=4,type="vector")	     resclv\_senso[[4]]$clusters[2,]
+
+get\_comp(resclv\_senso,K=4)	                       resclv\_senso[[4]]$comp
+
+get\_load(res.segext,K=3)	                           res.segext[[3]]$loading
+
+res.clvkm.rd<-CLV\_kmeans(X = pref, Xr = senso,      res.clvkm.rd<-CLV\_kmeans(X = pref, Xr = senso, 
+     method = "local", sX=TRUE, sXr = TRUE,                         method = 2, sX=TRUE, sXr = TRUE, 
+     clust=3, nstart=100)	                                           init=3, nstart=100)
+--------------------------------------------         ----------------------------------------------
+
+## References
+
+Vigneau E., Qannari E.M. (2003). Clustering of variables around latents componenets. _Comm. Stat_, 32(4), 1131-1150.
+
+Daillant-Spinnler B., MacFie H.J.H, Beyts P., Hedderley D. (1996). Relationships"Relationships between perceived sensory properties and major preference directions of 12 varieties of apples from the southern hemisphere. _Food Quality and Preference_, 7(2), 113-126.

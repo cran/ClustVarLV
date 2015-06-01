@@ -11,18 +11,16 @@
 #' @param Xu : The external variables associated with the columns of X
 #' @param Xr : The external variables associated with the rows of X
 #' @param method : The criterion to be use in the cluster analysis.  \cr
-#'        1 : the squared covariance is used as a measure of proximity (directional groups). \cr    
-#'        2 : the covariance is used as a measure of proximity (local groups)
-#' @param sX , TRUE/FALSE : standardization or not of the columns X (TRUE by default)\cr
+#'        1 or "directional" : the squared covariance is used as a measure of proximity (directional groups). \cr    
+#'        2 or "local"       : the covariance is used as a measure of proximity (local groups)
+#' @param sX ,TRUE/FALSE : standardization or not of the columns X (TRUE by default)\cr
 #'        (predefined -> cX = TRUE : column-centering of X)
-#' @param sXr , TRUE/FALSE : standardization or not of the columns Xr (FALSE by default)\cr
+#' @param sXr ,TRUE/FALSE : standardization or not of the columns Xr (FALSE by default)\cr
 #'        (predefined -> cXr    = TRUE : column-centering of Xr)
-#' @param sXu , TRUE/FALSE : standardization or not of the columns Xu (FALSE by default)\cr
+#' @param sXu ,TRUE/FALSE : standardization or not of the columns Xu (FALSE by default)\cr
 #'        (predefined -> cXu= FALSE : no centering, Xu considered as a weight matrix)
 #' @param nmax : maximum number of partitions for which the consolidation will be done (by default nmax=20)
 #' @param maxiter : maximum number of iterations allowed for the consolidation/partitioning algorithm (by default maxiter=20)
-#' @param graph , TRUE  : dendrogram and evolution of the aggregation criterion before and after consolidation (default)
-#'        FALSE : no graphs
 #' 
 #' 
 #' @return \item{tabres}{ Results of the clustering algorithm.
@@ -48,13 +46,21 @@
 #' @seealso CLV_kmeans, LCLV
 #' @examples data(apples_sh)
 #' #directional groups
-#' resclvX <- CLV(X = apples_sh$senso, method = 1, sX = TRUE, graph = TRUE)
+#' resclvX <- CLV(X = apples_sh$senso, method = "directional", sX = TRUE)
+#' plot(resclvX,type="dendrogram")
+#' plot(resclvX,type="delta")
 #' #local groups with external variables Xr
-#' resclvYX <- CLV(X = apples_sh$pref, Xr = apples_sh$senso, 
-#'                 method = 2, sX = FALSE, sXr = TRUE, graph = TRUE)
-CLV <- function(X,Xu=NULL,Xr=NULL,method,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=20,maxiter=20,graph=TRUE)
+#' resclvYX <- CLV(X = apples_sh$pref, Xr = apples_sh$senso, method = "local", sX = FALSE, sXr = TRUE)
+#'
+#' @export                
+#'                 
+CLV <- function(X,Xu=NULL,Xr=NULL,method=NULL,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=20,maxiter=20)
 {
- if(method!=1 & method!=2) stop("method should be 1 or 2")
+  
+  if(is.null(method)) stop('parameter method should be =1/"directional" or =2/"local"')
+ if (method=="directional") method=1
+ if (method=="local") method=2
+
  cX=TRUE
  cXr=TRUE
  cXu=FALSE
@@ -310,36 +316,17 @@ CLV <- function(X,Xu=NULL,Xr=NULL,method,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=20,max
                           
  colnames(results)= c("merg1","merg2","new.clust","agg.crit.hac","clust.crit.hac",
                       "%S0expl.hac","clust.crit.cc","%S0expl.cc","iter")
- names(resultscc) = paste("partition",1:min(p-1,nmax),sep="")
+ names(resultscc) = paste("partition",1:min(p,nmax),sep="")
  resultscc$tabres=results
- resultscc$param<-list(method=method,n = n, p = p,nmax = nmax,EXTu=EXTu,EXTr=EXTr,sX=sX,sXr=sXr,cXu=cXu,sXu=sXu,strategy="none")
+ resultscc$param<-list(X=X,method=method,n = n, p = p,nmax = nmax,EXTu=EXTu,EXTr=EXTr,sX=sX,sXr=sXr,cXu=cXu,sXu=sXu,sbegin=sbegin,strategy="none")
  resultscah=list(labels=colnames(X),inertie=inertie, height=delta, merge=hmerge,order=ordr)    
  mytot<-resultscah  
  class(mytot)="hclust"
- clvclt= c(resultscc, list(mydendC = mytot)) 
+# clvclt= c(resultscc, list(mydendC = mytot)) 
  mydendC=as.dendrogram(mytot)
-# clvclt= c(resultscc, list(mydendC = mydendC))  
+ clvclt= c(resultscc, list(mydendC = mydendC))  
 
- if (graph) {
-    dev.new() 
-    plot(mydendC, type ="rectangle",  main="CLV Dendrogram", axes=F, cex.axis=0.5)
-    dev.new() 
-    if (p>20) gpmax<-20
-    if (p<=20) gpmax<-p
-    barplot(delta[(length(delta)-gpmax+2):length(delta)],col=4,xlab="Nb clusters", 
-            ylab="delta", main="Variation of criterion (before consolidation)",
-            axisnames=TRUE,names.arg=paste(gpmax:2,"->",(gpmax-1):1),las=2,
-            cex.names=0.6,cex.main = 0.8)
-    dev.new() 
-    tempo<-(results[(p-2):(p-gpmax+1),7]-results[(p-1):(p-gpmax+2),7])
-    if (results[1,7]>0) tempo<-c(tempo,sbegin-results[1,7])
-    if (results[1,7]==0) tempo<-c(tempo,0)
-    tempo[which(tempo<0)]<-0
-    barplot(tempo[(gpmax-1):1],col=4,xlab="Nb clusters", ylab="delta", 
-            main="Variation of criterion (after consolidation)",
-            axisnames=TRUE,names.arg=paste(gpmax:2,"->",(gpmax-1):1),
-            las=2,cex.names=0.6,cex.main = 0.8)
- }
+ 
  class(clvclt) = "clv"
  return(clvclt) 
 }

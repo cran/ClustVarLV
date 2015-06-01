@@ -39,7 +39,7 @@ if (K==1){
 ################################################
 # for K (>1) clusters  
 if (K>1) {
-cc_consol <- as.matrix(as.numeric(groupes))  
+cc_consol <- as.matrix(as.numeric(groupes)) 
 pcritav=0
 
 for (i in 1:iter.max) {
@@ -48,7 +48,8 @@ for (i in 1:iter.max) {
   groupes_tmp<-cc_consol[,i] 
  
   for (k in 1:K) { 
-    ind<-which(groupes_tmp==k)
+    ind<-which(groupes_tmp==k) 
+                               
     if (length(ind) > 0) {    
    
         res <- consol_calcul_s(method,X,EXTr,Xr,EXTu,Xu,ind,rlevel=rho)  

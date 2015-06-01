@@ -14,8 +14,6 @@
 #' @param sXu TRUE/FALSE : standardization or not of the columns Xu (FALSE by default)\cr
 #'        (predefined -> cXu= FALSE : no centering, Xu considered as a weight matrix)
 #' @param nmax maximum number of partitions for which the consolidation will be done (by default nmax=20)
-#' @param graph TRUE  : dendrogram and evolution of the aggregation criterion before and after consolidation (default)
-#'        FALSE : no graphs
 #' @return \item{tabres}{ Results of the clustering algorithm.
 #'         In each line you find the results of one specific step of the hierarchical clustering.
 #'         \itemize{
@@ -39,9 +37,11 @@
 #'          }}
 #' @references Vigneau, E., Endrizzi, I.,& Qannari, E.M. (2011). Finding and explaining clusters of consumers using CLV approach. Food Quality and Preference, 22, 705-713.
 #' @references Vigneau, E., Charles, M.,& Chen, M. (2014). External preference segmentation with additional information on consumers: A case study on apples. Food Quality and Preference, 32, 83-92. 
-#'        
+#' 
+#' @export      
+#' 
 LCLV <-
-function(X,Xr,Xu,ccX=FALSE,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=20,graph=TRUE)
+function(X,Xr,Xu,ccX=FALSE,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=20)
 {
  cX=TRUE
  cXr=TRUE
@@ -289,7 +289,7 @@ function(X,Xr,Xu,ccX=FALSE,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=20,graph=TRUE)
  names(resultscc) = paste("partition",1:nmax,sep="")
  
  resultscc$tabres=results
- resultscc$param<-list(n = n, p = p,nmax = nmax,ccX=ccX,sX=sX,sXr=sXr,cXu=cXu,sXu=sXu,strategy="none")
+ resultscc$param<-list(X=X,n = n, p = p,nmax = nmax,ccX=ccX,sX=sX,sXr=sXr,cXu=cXu,sXu=sXu,strategy="none")
  
  resultscah=list(labels=colnames(X),inertie=inertie, height=delta, merge=hmerge,order=ordr )    
  mytot<-resultscah  
@@ -298,22 +298,7 @@ function(X,Xr,Xu,ccX=FALSE,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=20,graph=TRUE)
   
  clvclt= c(resultscc, list(mydendC = mydendC))
  
- if (graph) {
-   dev.new() 
-   plot(mydendC, type ="rectangle",  main="CLV Dendrogram", axes=F, cex.axis=0.5)
-   dev.new() 
-   if (p>20) gpmax<-20
-   if (p<=20) gpmax<-p
-   barplot(delta[(length(delta)-gpmax+2):length(delta)],col=4,xlab="Nb clusters", ylab="delta", 
-           main="Variation of criterion (before consolidation)",axisnames=TRUE,
-           names.arg=paste(gpmax:2,"->",(gpmax-1):1),las=2,cex.names=0.6,cex.main = 0.8)
-   dev.new() 
-   tempo<-(results[(p-2):(p-gpmax),7]-results[(p-1):(p-gpmax+1),7])
-   tempo[which(tempo<0)]<-0
-   barplot(tempo[(gpmax-1):1],col=4,xlab="Nb clusters", ylab="delta", 
-           main="Variation of criterion (after consolidation)",axisnames=TRUE,
-           names.arg=paste(gpmax:2,"->",(gpmax-1):1),las=2,cex.names=0.6,cex.main = 0.8)
- }
+
  class(clvclt) = "lclv"
  return(clvclt) 
 }

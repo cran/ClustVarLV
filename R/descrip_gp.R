@@ -1,23 +1,15 @@
-#' Description of the clusters of variables
-#' 
-#' Complementary function that provides for each cluster their correlation with their own cluster latent component
-#' and with the next neighbouring cluster latent component.
-#' 
-#' @param resclv resultat of CLV or CLV_kmeans
-#' @param X the initial matrix used in CLV or CLV_kmeans
-#' @param K the number of groups in the partition
-#' @examples data(apples_sh)
-#' resclvX <- CLV(X = apples_sh$senso, method = 1, sX = TRUE, graph = TRUE)
-#' descrip_gp(resclvX, X = apples_sh$senso, K = 4) 
-descrip_gp <-
-function(resclv, X, K=NULL) {
-  if (!inherits(resclv, c("clv","clvkmeans"))) 
-    stop("non convenient objects")
-# resclv : resultat of clv.r or clv_keans.r
-# X: the initial matrix 
-# the number of groups in the partition
+# is called by summary.clv()  
+# 
 
-method<-resclv$param$method  
+descrip_gp <-
+function(resclv,K=NULL) {
+  
+#   if (!inherits(resclv, c("clv","clvkmeans"))) 
+#     stop("non convenient objects")
+
+
+method<-resclv$param$method 
+X<-resclv$param$X
 # group's membership of the variables  
 if(is.null(resclv$param$K)) { 
     if (is.null(K)) {K<- as.numeric(readline("Please, give the number of groups : "))}
@@ -78,7 +70,8 @@ for (k in 1:K)
   
   caract<- matrix(0,nrow=ncol(Xgroup),ncol=2)
   rownames(caract)<-colnames(Xgroup)
-  colnames(caract)<-c("cor in group","cor next group")
+  if (method==1) colnames(caract)<-c("cor in group"," |cor|next group")
+  if (method==2) colnames(caract)<-c("cor in group"," cor next group")
       
   for (j in 1:ncol(Xgroup))    {
     veccov<-cov(Xgroup[,j],lvstd) #covariance between var j and the latent variable of its group (k)
@@ -86,9 +79,10 @@ for (k in 1:K)
     if (method==1) ordrecov<-order(veccov^2,decreasing=T)
     if (method==2) ordrecov<-order(veccov,decreasing=T)
     verif<-(ordrecov[1]==k) 
-    if (verif==F) {print (c(k,j)) }
+ #   if (verif==F) {print (c(k,j)) }
     caract[j,1]<-round(veccor[ordrecov[1]],2) 
-    caract[j,2]<-round(veccor[ordrecov[2]],2)
+    if (method==1) caract[j,2]<-round(abs(veccor[ordrecov[2]]),2)
+    if (method==2) caract[j,2]<-round(veccor[ordrecov[2]],2)
   }  
     
  
@@ -103,9 +97,9 @@ for (k in 1:K)
   # sign modification if necessary
   if (method==1) {
     if (groups[[k]][1,1]<0) groups[[k]][,1]<-groups[[k]][,1]*(-1)
-    if(K >1){
-      if (groups[[k]][1,2]<0) groups[[k]][,2]<-groups[[k]][,2]*(-1)
-    }
+#     if(K >1){
+#       if (groups[[k]][1,2]<0) groups[[k]][,2]<-groups[[k]][,2]*(-1)
+#     }
   }
   
   

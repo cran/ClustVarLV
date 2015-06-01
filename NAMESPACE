@@ -1,7 +1,19 @@
+
 useDynLib(ClustVarLV)
-import(Rcpp)
-##Exported functions:
-export(CLV,CLV_kmeans,descrip_gp,gpmb_on_pc,LCLV,print.clv,print.clvkmeans,print.lclv)
+
+S3method(plot,clv)
+S3method(plot,lclv)
 S3method(print,clv)
-S3method(print,clvkmeans)
 S3method(print,lclv)
+export(CLV)
+export(CLV_kmeans)
+export(LCLV)
+export(data_biplot)
+export(get_comp)
+export(get_load)
+export(get_partition)
+export(plot_var)
+export(stand_quali)
+export(summary_clv)
+
+importFrom(Rcpp, evalCpp)

@@ -1,12 +1,12 @@
 #' Print the LCLV results
 #' 
-#' Print the LCLV results
-#' 
-#' @param x an object of class lclv
+#' @param x an object of class \code{lclv}
 #' @param ... further arguments passed to or from other methods
 #' 
 #' @seealso LCLV
-#' @export print lclv
+#' 
+#' @export
+#' 
 print.lclv =  function (x, ...) 
 {
   if (!inherits(x, "lclv")) 
@@ -25,9 +25,9 @@ print.lclv =  function (x, ...)
   cat(paste("consolidation for K in c(",x$param$nmax,":2)",sep = ""))
   cat("\n")
   cat("\n")
-  cat("$tarbre: results of the clustering")
+  cat("$tarbres: results of the clustering")
   cat("\n")
-  cat("$partitionK or [[K]]: results of partition for K clusters")
+  cat("$partitionK or [[K]]: results of partition into K clusters")
   cat("\n")
   cat("     $clusters: groups membership (before and after consolidation)")
   cat("\n")
