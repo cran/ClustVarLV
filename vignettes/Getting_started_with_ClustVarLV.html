@@ -248,7 +248,7 @@ plot(resclv_senso,&quot;delta&quot;)
 Because the criterion clearly jumps when passing from 4 to 3 groups,  a partition into 4 groups is retained.</p>
 
 <pre><code class="r"># Summary the CLV results for a partition into 4 groups
-summary_clv(resclv_senso,K=4)
+summary(resclv_senso,K=4)
 </code></pre>
 
 <pre><code>## $number
@@ -477,9 +477,9 @@ The number of clusters needs to be fixed (e.g.3). </p>
 
 <pre><code>##    
 ##      1  2  3
-##   1  0  1 13
-##   2  0 28  0
-##   3 17  0  1
+##   1  1 13  0
+##   2 28  0  0
+##   3  0  1 17
 </code></pre>
 
 <p>Partitions are very close.</p>

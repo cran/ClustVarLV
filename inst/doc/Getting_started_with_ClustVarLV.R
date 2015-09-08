@@ -23,7 +23,7 @@ plot(resclv_senso,"delta")
 
 ## ------------------------------------------------------------------------
 # Summary the CLV results for a partition into 4 groups
-summary_clv(resclv_senso,K=4)
+summary(resclv_senso,K=4)
 
 ## ---- fig.width=4, fig.height=4------------------------------------------
 # Representation of the group membership for a partition into 4 groups

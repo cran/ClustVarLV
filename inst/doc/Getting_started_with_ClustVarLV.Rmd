@@ -1,11 +1,11 @@
 ---
-title: "Getting started with ClustVarLV. version 1.4.0"
+title: "Getting started with ClustVarLV. version 1.4.1"
 author: "Evelyne Vigneau"
 date: "2015-05-29"
 output: rmarkdown::pdf_document
 #rmarkdown::pdf_document; rmarkdown::html_document
 vignette: >
-  %\VignetteIndexEntry{Getting started with ClustVarLV. version 1.4.0}
+  %\VignetteIndexEntry{Getting started with ClustVarLV. version 1.4.1}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -57,7 +57,7 @@ Because the criterion clearly jumps when passing from 4 to 3 groups,  a partitio
 
 ```{r}
 # Summary the CLV results for a partition into 4 groups
-summary_clv(resclv_senso,K=4)
+summary(resclv_senso,K=4)
 ```
 
 The function plot\_var() allows us to describe the groups of variables into a two dimensional space obtained by Principal Components Analysis. 

@@ -1,10 +1,10 @@
-
 useDynLib(ClustVarLV)
 
 S3method(plot,clv)
 S3method(plot,lclv)
 S3method(print,clv)
 S3method(print,lclv)
+S3method(summary,clv)
 export(CLV)
 export(CLV_kmeans)
 export(LCLV)
@@ -14,6 +14,7 @@ export(get_load)
 export(get_partition)
 export(plot_var)
 export(stand_quali)
-export(summary_clv)
 
 importFrom(Rcpp, evalCpp)
+importFrom("graphics", "abline", "arrows", "barplot", "legend", "par","plot", "symbols", "text")
+importFrom("stats", "as.dendrogram", "cor", "cov", "runif", "sd","var")
