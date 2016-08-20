@@ -35,8 +35,10 @@
 #'                \item {loading_v}{ : loadings of the external Xr variables (after consolidation)}
 #'                \item {loading_u}{ : loadings of the external Xu variables (after consolidation)}
 #'          }}
-#' @references Vigneau, E., Endrizzi, I.,& Qannari, E.M. (2011). Finding and explaining clusters of consumers using CLV approach. Food Quality and Preference, 22, 705-713.
+#'
+#' @references Vigneau E., Qannari E.M. (2003). Clustering of variables around latents components. Comm. Stat, 32(4), 1131-1150.
 #' @references Vigneau, E., Charles, M.,& Chen, M. (2014). External preference segmentation with additional information on consumers: A case study on apples. Food Quality and Preference, 32, 83-92. 
+#' @references Vigneau E., Chen M., Qannari E.M. (2015). ClustVarLV:  An R Package for the clustering of Variables around Latent Variables. The R Journal, 7(2), 134-148
 #' 
 #' @export      
 #' 

@@ -37,6 +37,11 @@
 #'         \item{comp}{ The latent components of the clusters}
 #'         \item{loading}{ if there are external variables Xr or Xu :  The loadings of the external variables}
 #' @seealso CLV, LCLV
+#' 
+#' @references Vigneau E., Qannari E.M. (2003). Clustering of variables around latents components. Comm. Stat, 32(4), 1131-1150.
+#' @references Vigneau E., Chen M., Qannari E.M. (2015). ClustVarLV:  An R Package for the clustering of Variables around Latent Variables. The R Journal, 7(2), 134-148
+#' @references Vigneau E., Chen M. (2016). Dimensionality reduction by clustering of variables while setting aside atypical variables. Electronic Journal of Applied Statistical Analysis, 9(1), 134-153
+
 #' @examples data(apples_sh)
 #' #local groups with external variables Xr 
 #' resclvkmYX <- CLV_kmeans(X = apples_sh$pref, Xr = apples_sh$senso,method = "local",
@@ -73,11 +78,17 @@ CLV_kmeans <- function(X,Xu=NULL,Xr=NULL,method,sX=TRUE,sXr=FALSE,sXu=FALSE,
   X<- scale(X, center=cX, scale=sX)
   p <- ncol(X)
   n <- nrow(X)  
-
+  
+  # verification if there are NA values
+  valmq=FALSE
+  if (sum(is.na(X))>0)  {
+    valmq=TRUE
+    tauxNA=sum(is.na(X))/(n*p)
+  }
+  
   if (is.null(Xr)) {
     EXTr<-0
-  }
-  else {
+  }  else {
     EXTr<-1                                    
     Xr<- scale(Xr, center=cXr, scale=sXr)
     ntilde <- dim(Xr)[1]
@@ -87,8 +98,7 @@ CLV_kmeans <- function(X,Xu=NULL,Xr=NULL,method,sX=TRUE,sXr=FALSE,sXu=FALSE,
 
   if (is.null(Xu)) {
     EXTu<-0
-  } 
-  else {
+  }   else {
     EXTu<-1                   
     Xu<- scale(Xu, center=cXu, scale=sXu) 
     ptilde <- dim(Xu)[1]  
@@ -96,9 +106,11 @@ CLV_kmeans <- function(X,Xu=NULL,Xr=NULL,method,sX=TRUE,sXr=FALSE,sXu=FALSE,
     if (p != ptilde) {stop("X and Xu must be defined for the same number of
                            variables") }
     if (EXTr==1) {stop("this procedure doesn't allow Xr and Xu to be defined
-                       simultenaously. Use l-clv instead")}
+                       simultaneously. Use LCLV instead")}
   }  
-  
+ 
+  if (valmq & ((EXTr==1)|(EXTu==1))) stop("The matrix X contains missing values. Use a X matrix without missing value for CLV with external data")
+
   
   crit<-crit_init(method,X,EXTr,Xr,EXTu,Xu)
   sbegin <- sum(crit)  
@@ -108,10 +120,22 @@ CLV_kmeans <- function(X,Xu=NULL,Xr=NULL,method,sX=TRUE,sXr=FALSE,sXu=FALSE,
      K <- clust
      out<-mat_init(X,EXTr,Xr,EXTu,Xu,K)
      comp<-out$comp
-     comp <- as.matrix(X[,sort(sample.int(p, K))]) # K columns of X chosen at random
+     if (!valmq) comp <- as.matrix(X[,sort(sample.int(p, K))]) # K columns of X chosen at random
+     if (valmq) {                                              # K groups of variables randomly defined, the K comp are defined accordingly
+       gp<-sample(1:K,p,replace=TRUE)
+       comp<-matrix(NA,nrow=n,ncol=K)
+       for (k in 1:K) {
+         ind <- which(gp == k)
+         if (length(ind) > 0) {
+           res<-consol_calcul(method,X,EXTr,Xr,EXTu,Xu,ind)
+           comp[,k]<-res$comp
+         }
+       }  
+     }
      if (EXTr==1)  {  a<-out$a }
      if (EXTu==1)  {  u<-out$u }
      groupes <- as.factor(consol_affect(method,X,Xr,Xu,EXTr,EXTu,comp,a,u))
+     if(sum(is.na(groupes))>0) warning("a variable has not been allocated to any cluster at initialisation step")
   } else {
      nstart = 1
      if (!is.numeric(clust))

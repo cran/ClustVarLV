@@ -66,6 +66,13 @@ data(apples_sh)
 resclvkmYX <- CLV_kmeans(X = apples_sh$pref, Xr = apples_sh$senso,method = "local",
           sX = FALSE, sXr = TRUE, clust = 2, nstart = 20)
 }
+\references{
+Vigneau E., Qannari E.M. (2003). Clustering of variables around latents components. Comm. Stat, 32(4), 1131-1150.
+
+Vigneau E., Chen M., Qannari E.M. (2015). ClustVarLV:  An R Package for the clustering of Variables around Latent Variables. The R Journal, 7(2), 134-148
+
+Vigneau E., Chen M. (2016). Dimensionality reduction by clustering of variables while setting aside atypical variables. Electronic Journal of Applied Statistical Analysis, 9(1), 134-153
+}
 \seealso{
 CLV, LCLV
 }

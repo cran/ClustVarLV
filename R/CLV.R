@@ -44,6 +44,10 @@
 #'                \item {loading}{ : if there are external variables Xr or Xu :  The loadings of the external variables (after consolidation)}
 #'          }}
 #' @seealso CLV_kmeans, LCLV
+#' 
+#' @references Vigneau E., Qannari E.M. (2003). Clustering of variables around latents components. Comm. Stat, 32(4), 1131-1150.
+#' @references Vigneau E., Chen M., Qannari E.M. (2015). ClustVarLV:  An R Package for the clustering of Variables around Latent Variables. The R Journal, 7(2), 134-148
+#' 
 #' @examples data(apples_sh)
 #' #directional groups
 #' resclvX <- CLV(X = apples_sh$senso, method = "directional", sX = TRUE)
@@ -57,16 +61,18 @@
 CLV <- function(X,Xu=NULL,Xr=NULL,method=NULL,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=20,maxiter=20)
 {
   
-  if(is.null(method)) stop('parameter method should be =1/"directional" or =2/"local"')
+ if(is.null(method)) stop('parameter method should be =1/"directional" or =2/"local"')
  if (method=="directional") method=1
  if (method=="local") method=2
-
+ 
+ 
  cX=TRUE
  cXr=TRUE
  cXu=FALSE
  
+
  # verification if some variables have constant values (standard deviation=0)
- who<-which(apply(X,2,sd)==0)
+ who<-which(apply(X,2,sd,na.rm=TRUE)==0)
  if ((length(who)>0)&(sX==TRUE)) {
    listwho<-c(": ")
    for (r in 1:length(who)) {listwho=paste(listwho,colnames(X)[who[r]],",")}
@@ -78,28 +84,45 @@ CLV <- function(X,Xu=NULL,Xr=NULL,method=NULL,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=2
    warning("The variables",listwho," have constant values (standard deviation=0). Please remove these variables from the X matrix.")
  }
  
+
  X<- scale(X, center=cX, scale=sX)
  p <- ncol(X) 
  n <- nrow(X)
- if (is.null(Xr)) {EXTr<-0}                      
- else {
+ 
+ valmq=FALSE
+ # verification if there are NA values
+ if (sum(is.na(X))>0)  {
+   valmq=TRUE
+   tauxNA=sum(is.na(X))/(n*p)
+ }
+ epsil=0.00001
+ if(nmax>p) nmax<-p
+ 
+ if (is.null(Xr)) {
+   EXTr<-0
+   } else {
       EXTr<-1                                    
       Xr<- scale(Xr, center=cXr, scale=sXr)
       ntilde <- dim(Xr)[1]
       q<-dim(Xr)[2] 
       if (n != ntilde) {stop("X and Xr must have the same number of observations")}
- } 
- if (is.null(Xu)) {EXTu<-0}                      
- else {
+   } 
+ if (is.null(Xu)) {
+   EXTu<-0
+   } else {
    EXTu<-1                   
    Xu<- scale(Xu, center=cXu, scale=sXu) 
    ptilde <- dim(Xu)[1]  
    m<-dim(Xu)[2] 
    if (p != ptilde) {stop("The number of consumers in X and Xu must are not the same") }                      
-   if (EXTr==1) {stop("This procedure doesn't allow Xr and Xu to be defined simultenaously. Use LCLV instead")}
- }
+   if (EXTr==1) {stop("This procedure doesn't allow Xr and Xu to be defined simultaneously. Use LCLV instead")}
+   }
+ if (valmq & ((EXTr==1)|(EXTu==1))) stop("The matrix X contains missing values. Use a X matrix without missing value for CLV with external data")
  
- 
+ ###################################################################################
+ # Hierarchical Ascendant algorithm
+ ###################################################################################
+ # first step : one variable=one cluster
  groupes <- 1:p                     
  fusions <- -groupes
  crit<-crit_init(method,X,EXTr,Xr,EXTu,Xu)
@@ -118,40 +141,57 @@ CLV <- function(X,Xu=NULL,Xr=NULL,method=NULL,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=2
 
  if (method == 1 & EXTu == 0) {
    if((EXTr==0)) { 
-     matcov = t(X)%*%X 
-     rescpp= critcpp(matcov,crit,n)     
+     if (!valmq)  {
+       matcov = t(X)%*%X /(n-1)
+       rescpp= critcpp(matcov,crit)   
+       critstep = rescpp[[1]]
+       deltamin = rescpp[[2]]
+       critstep[lower.tri(critstep, diag = T)] = NA
+       deltamin[lower.tri(critstep, diag = T)] = NA
+     }
+     if (valmq)   {
+#     matcov = cov(X,use="pairwise.complete.obs")
+       pg <- max(groupes)
+       for (i in 1:(pg - 1)) {
+         for (j in (i + 1):pg) {
+           X12=X[,c(i,j)]
+           if (EXTu==1) {Xu12<-Xu[c(i,j),]}
+           critval<-crit_h(method,X12,EXTr,Xr,EXTu,Xu12,tauxNA=tauxNA)
+           critstep[i,j]<-critval
+           deltamin[i,j]<-crit[i]+crit[j]-critstep[i,j]
+         }
+       }
+     }
    }
    if((EXTr==1)) {
-     matcov = t(X)%*%Xr%*%t(Xr)%*%X
-     rescpp= critcpp(matcov,crit,n)   
+     matcov = t(X)%*%Xr%*%t(Xr)%*%X/(n-1)
+     rescpp= critcpp(matcov,crit)   
+     critstep = rescpp[[1]]
+     deltamin = rescpp[[2]]
+     critstep[lower.tri(critstep, diag = T)] = NA
+     deltamin[lower.tri(critstep, diag = T)] = NA
    }
-
-   critstep = rescpp[[1]]
-   deltamin = rescpp[[2]]
-   critstep[lower.tri(critstep, diag = T)] = NA
-   deltamin[lower.tri(critstep, diag = T)] = NA
- }
- else {
+ } else {
    pg <- max(groupes)
    for (i in 1:(pg - 1)) {
      for (j in (i + 1):pg) {
        X12=X[,c(i,j)]
        if (EXTu==1) {Xu12<-Xu[c(i,j),]}
-       critval<-crit_h(method,X12,EXTr,Xr,EXTu,Xu12)
+       critval<-crit_h(method,X12,EXTr,Xr,EXTu,Xu12,tauxNA=tauxNA)
        critstep[i,j]<-critval
        deltamin[i,j]<-crit[i]+crit[j]-critstep[i,j]
      }
    }  
  }
- 
 
  
+
+# next steps
  for (level in 1:(p-1)) { 
    cmerge<-mincpp(deltamin)
    cmerge1 = cmerge[[1]]
    cmerge2 =  cmerge[[2]]
-   
-		ind1 <- which(groupes == cmerge1)
+ 		ind1 <- which(groupes == cmerge1)
     ind2 <- which(groupes == cmerge2)
     ind<-c(fusions[ind1[1]],fusions[ind2[1]])
     hmerge[level,]<-ind
@@ -174,10 +214,11 @@ CLV <- function(X,Xu=NULL,Xr=NULL,method=NULL,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=2
    
    itercm = c(1:max(groupes))[-cmerge1]
    gr = lapply(itercm,function(x) unique(c(which(groupes == x),gr2)))
-   if(method==1 & EXTr==0 & EXTu==0) critval = lapply(gr,function(x) critval = (svd(X[,x])$d[1])^2/(n-1))
-   else{
-     if (EXTu==1) critval = lapply(gr,function(x) critval = crit_h(method,X[,x],EXTr,Xr,EXTu,Xu[x,]))
-     else critval = lapply(gr,function(x) critval = crit_h(method,X[,x],EXTr,Xr,EXTu,Xu))
+   if(method==1 & EXTr==0 & EXTu==0) {
+                  critval = lapply(gr,function(x) critval = crit_h(method,X[,x],EXTr,Xr,EXTu,Xu,tauxNA=tauxNA))
+   } else {
+     if (EXTu==1) critval = lapply(gr,function(x) critval = crit_h(method,X[,x],EXTr,Xr,EXTu,Xu[x,],tauxNA=tauxNA))
+     else         critval = lapply(gr,function(x) critval = crit_h(method,X[,x],EXTr,Xr,EXTu,Xu,tauxNA=tauxNA))
    } 
    critgr = lapply(gr,function(x) crit[x[1]])
    
@@ -191,55 +232,23 @@ CLV <- function(X,Xu=NULL,Xr=NULL,method=NULL,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=2
      critstep[cmerge1,(cmerge1+1):max(groupes)] = unlist(critval)[(cmerge1):(max(groupes)-1)]
      deltamin[cmerge1,(cmerge1+1):max(groupes)] = deltaval[(cmerge1):(max(groupes)-1)]
    }
-#    
-#     if (cmerge1>1)
-# 		{
-# 			for (iter in 1:(cmerge1-1)){
-# 				gr1<-which(groupes==iter)  
-#         X12<-X[,c(gr1,gr2)]
-# 				if (EXTu==1) {Xu12<-Xu[c(gr1,gr2),]}        
-# 			  critval<-crit_h(method,X12,EXTr,Xr,EXTu,Xu12)
-# 				critstep[iter,cmerge1]<-critval
-#         deltamin[iter,cmerge1]<-crit[gr1[1]]+crit[gr2[1]]-critstep[iter,cmerge1]	    
-#      }
-#     }
-#     if (cmerge1<max(groupes))
-# 		 {
-# 			for (iter in (cmerge1+1):max(groupes))
-# 			{   
-# 			  gr1<-which(groupes==iter)  
-# 			  X12<-X[,c(gr2,gr1)]
-# 			  if (EXTu==1) {Xu12<-Xu[c(gr2,gr1),]}        
-# 			  critval<-crit_h(method,X12,EXTr,Xr,EXTu,Xu12)
-# 			  critstep[cmerge1,iter]<-critval
-# 		    deltamin[cmerge1,iter]<-crit[gr2[1]]+crit[gr1[1]]-critstep[cmerge1,iter]		    
-# 			}
-#     }
 
+    #---------------------------------------------
+    # consolidation phase
     if ((ncluster <= nmax) & (ncluster > 1) ) {
     cc_consol <- t(t(groupes))
     K <- ncluster
     T<-c()   
-    
+    pcritav=0
+                 
    for (i in 1:maxiter) {       
-
         critere <-rep(0,K)
         groupes_tmp <- cc_consol[,i]
         out<-mat_init(X,EXTr,Xr,EXTu,Xu,K)
         comp<-out$comp
         if (EXTr==1)  a<-out$a
         if (EXTu==1)  u<-out$u
-        
-#         iterma = c(1:K)
-#         ind = lapply(iterma,function(x) which(groupes_tmp == x)) 
-#         res = lapply(ind,function(x) consol_calcul(method,X,EXTr,Xr,EXTu,Xu,x))
-#         critere = unlist(lapply(iterma,function(x) res[[x]]$critere))
-#         comp = matrix(unlist(lapply(iterma,function(x) res[[x]]$comp)),,K)
-#         if (EXTr==1)  a<-matrix(unlist(lapply(iterma,function(x) res[[x]]$a)),,K)
-#         if (EXTu==1)  u<-matrix(unlist(lapply(iterma,function(x) res[[x]]$u)),,K)
-#         
-#         T = cbind(T, sum(res[[K]]$critere))
-#         
+       
         for (k in 1:K) {
             ind <- which(groupes_tmp == k)
             if (length(ind) > 0) {
@@ -250,12 +259,15 @@ CLV <- function(X,Xu=NULL,Xr=NULL,method=NULL,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=2
               if (EXTu==1)  u[,k]<-res$u
            }
         }    
+       pcrit<-sum(critere)/sbegin
  
        groupes_tmp<-consol_affect(method,X,Xr,Xu,EXTr,EXTu,comp,a,u)
-
-            
-      if (length(which((cc_consol[, i] == groupes_tmp) == FALSE, arr.ind = TRUE)) == 0)  break
-      cc_consol = cbind(cc_consol, groupes_tmp)
+       if(sum(is.na(groupes_tmp))>0) warning("a variable has not been allocated to any cluster at step ",i)
+ 
+       if (length(which((cc_consol[, i] == groupes_tmp) == FALSE, arr.ind = TRUE)) == 0)  break
+       if((pcrit-pcritav)<epsil) break
+       cc_consol = cbind(cc_consol, groupes_tmp)
+       pcritav=pcrit
     }
     rownames(cc_consol) <- colnames(X)      
     names(cc_consol) = NULL
@@ -268,9 +280,12 @@ CLV <- function(X,Xu=NULL,Xr=NULL,method=NULL,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=2
     results[level,7:9]<- c(sum(critere),(sum(critere)/sbegin)*100, i)  
     resultscc[[K]] <- listcc 
               	 	                                   
-    }  
- }     
-                
+    }   # --------------------  end of the consolidation 
+ } # end of the current hierarchical step
+
+
+
+# if there is only one cluster (K=1)
   results[p-1,7:9]<- c(results[p-1,5],results[p-1,6], 0)  
   group1<-matrix(1,nrow=2,ncol=p)
   colnames(group1) <- colnames(X)
@@ -289,6 +304,7 @@ CLV <- function(X,Xu=NULL,Xr=NULL,method=NULL,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=2
   if ((EXTu==1)&(EXTr==0)) listcc = list(clusters = group1,  comp=comp,loading=u)      
   resultscc[[1]] <- listcc 
      
+  # consolidation result when K=p (only required for homogeneity of the results)
   if (nmax == p) {
       groupes<-matrix(1:p,nrow=p,ncol=1)
       rownames(groupes) <- colnames(X)

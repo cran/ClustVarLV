@@ -1,6 +1,12 @@
 clvk_sparse <- function(X,n,p,sbegin,EXTr,EXTu,Xu,Xr,method,K,comp,groupes,a,u,iter.max,nstart,rho)
-{
-
+{                      
+                                                             
+# verification if there are NA values
+  valmq=FALSE
+  if (sum(is.na(X))>0)  {
+    valmq=TRUE
+    tauxNA=sum(is.na(X))/(n*p)
+  }
 epsil=0.00001 
 sloading = list()
 ################################################
@@ -8,12 +14,10 @@ sloading = list()
 if (K==1){
   cc_consol <- as.matrix(rep(1,p))
   for (i in 1:iter.max) {
-   
     critere <-rep(0,K)
     groupes_tmp<-cc_consol[,i]
     ind<-which(groupes_tmp == 1)   
-    
-    res = consol_calcul_s(method,X,EXTr,Xr,EXTu,Xu,ind,rlevel = rho) 
+     res = consol_calcul_s(method,X,EXTr,Xr,EXTu,Xu,ind,rlevel = rho) 
   
     critere<-res$critere
     crit_trials<-sum(critere)
@@ -41,7 +45,7 @@ if (K==1){
 if (K>1) {
 cc_consol <- as.matrix(as.numeric(groupes)) 
 pcritav=0
-
+                                                
 for (i in 1:iter.max) {
 
   critere <-rep(0,K)
@@ -51,7 +55,6 @@ for (i in 1:iter.max) {
     ind<-which(groupes_tmp==k) 
                                
     if (length(ind) > 0) {    
-   
         res <- consol_calcul_s(method,X,EXTr,Xr,EXTu,Xu,ind,rlevel=rho)  
         sloading[[k]] = res$loading
     

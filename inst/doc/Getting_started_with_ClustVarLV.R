@@ -70,3 +70,18 @@ table(get_partition(res.segext,K=3),get_partition(res.clvkm.hc,K=3))
 ## ------------------------------------------------------------------------
 table(get_partition(res.segext,K=3),get_partition(res.clvkm.rd,K=3)) 
 
+## ------------------------------------------------------------------------
+clvkm_senso_kpone<-CLV_kmeans(X = senso, method = "directional",sX=TRUE, clust=4, strategy="kplusone",rho=0.5)
+get_partition(clvkm_senso_kpone,type="matrix")
+
+## ------------------------------------------------------------------------
+sizG0<-NULL
+for (r in seq(0,1,0.1)) {
+  res<-CLV_kmeans(X = pref, method = "local", sX=TRUE, clust=3, nstart=20, strategy="kplusone",rho=r)
+  sizG0<-c(sizG0,sum(get_partition(res)==0))
+}
+plot(seq(0,1,0.1),sizG0,type="b",xlab="rho",ylab="# var in noise cluster")
+
+## ------------------------------------------------------------------------
+plot_var(CLV_kmeans(X = pref, method = "local", sX=TRUE, clust=3, nstart=20, strategy="kplusone",rho=0.4))
+

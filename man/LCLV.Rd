@@ -56,8 +56,10 @@ the first one is a linear combination of the external information collected for 
 is a linear combination of the external information associated with the columns of X.
 }
 \references{
-Vigneau, E., Endrizzi, I.,& Qannari, E.M. (2011). Finding and explaining clusters of consumers using CLV approach. Food Quality and Preference, 22, 705-713.
+Vigneau E., Qannari E.M. (2003). Clustering of variables around latents components. Comm. Stat, 32(4), 1131-1150.
 
 Vigneau, E., Charles, M.,& Chen, M. (2014). External preference segmentation with additional information on consumers: A case study on apples. Food Quality and Preference, 32, 83-92.
+
+Vigneau E., Chen M., Qannari E.M. (2015). ClustVarLV:  An R Package for the clustering of Variables around Latent Variables. The R Journal, 7(2), 134-148
 }
 

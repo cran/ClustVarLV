@@ -72,6 +72,11 @@ plot(resclvX,type="delta")
 #local groups with external variables Xr
 resclvYX <- CLV(X = apples_sh$pref, Xr = apples_sh$senso, method = "local", sX = FALSE, sXr = TRUE)
 }
+\references{
+Vigneau E., Qannari E.M. (2003). Clustering of variables around latents components. Comm. Stat, 32(4), 1131-1150.
+
+Vigneau E., Chen M., Qannari E.M. (2015). ClustVarLV:  An R Package for the clustering of Variables around Latent Variables. The R Journal, 7(2), 134-148
+}
 \seealso{
 CLV_kmeans, LCLV
 }

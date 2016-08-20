@@ -26,6 +26,12 @@ function(resclv,K=NULL,axeh=1,axev=2,label=FALSE,cex.lab=1,v_colors=NULL,v_symbo
   
   X<-resclv$param$X
   
+  # verification if there are NA values
+  if (sum(is.na(X))>0)  {
+    valmq=TRUE
+    stop(cat("This function cannot be apply if the data set contains missing values. \nUse the imputation approach based on clv result (see imput_clv() function) and perform again CLV on the imputed data set."))
+  }
+  
   if(is.null(resclv$param$K)) { 
     if (is.null(K)) {K<- as.numeric(readline("Please, give the number of groups : "))}
     clusters<-resclv[[K]]$clusters[2,]
@@ -34,7 +40,7 @@ function(resclv,K=NULL,axeh=1,axev=2,label=FALSE,cex.lab=1,v_colors=NULL,v_symbo
     K<-resclv$param$K
  }
   
-  X<- scale(X, center=T, scale=resclv$param$sX)
+  X<- scale(X, center=TRUE, scale=resclv$param$sX)
   p <- dim(X)[2] 
   n <- dim(X)[1]
    

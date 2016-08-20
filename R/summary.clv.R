@@ -3,7 +3,7 @@
 #' @description This function provides the list of the variables within each group and complementary informations.
 #' Users will be asked to specify the number of clusters, 
 #' 
-#' @param resclv : result of CLV() or CLV_kmeans()
+#' @param object : result of CLV() or CLV_kmeans()
 #' @param K : the number of clusters (unless if CLV_kmeans was used)
 #' @param ... further arguments passed to or from other methods
 #' 
@@ -22,8 +22,8 @@
 
 summary.clv <-
 function(object,K=NULL,...) {
-    
-resclv<-object
+
+  resclv<-object   
 if (!inherits(resclv, "clv"))   stop("non convenient objects")
 
 method<-resclv$param$method 
@@ -45,7 +45,7 @@ if(is.null(resclv$param$K)) {
 
 if (is.null(colnames(X)))  stop("Please set column names for the matrix X")
 # pretreatment of X as in clv
-X<- scale(X, center=T, scale=resclv$param$sX)
+X<- scale(X, center=TRUE, scale=resclv$param$sX)
 p <- dim(X)[2] 
 n <- dim(X)[1]
 
@@ -78,7 +78,7 @@ correlation<-matrix(nrow=1,ncol=K)
 colnames(correlation)<-paste("group",c(1:K))
 groups<-list(NA)
 # latent var must be set as c'c=1
-lvstd<-latvar/sqrt(matrix(apply(latvar,2,var)*(n-1),n,K,byrow=T))
+lvstd<-latvar/sqrt(matrix(apply(latvar,2,var)*(n-1),n,K,byrow=TRUE))
     
     
 for (k in 1:K) 
@@ -94,8 +94,8 @@ for (k in 1:K)
   for (j in 1:ncol(Xgroup))    {
     veccov<-cov(Xgroup[,j],lvstd) #covariance between var j and the latent variable of its group (k)
     veccor<-cor(Xgroup[,j],latvar) #correlation between var j and the latent variable of ist group (k)
-    if (method==1) ordrecov<-order(veccov^2,decreasing=T)
-    if (method==2) ordrecov<-order(veccov,decreasing=T)
+    if (method==1) ordrecov<-order(veccov^2,decreasing=TRUE)
+    if (method==2) ordrecov<-order(veccov,decreasing=TRUE)
     verif<-(ordrecov[1]==k) 
     if (verif==F) {print (c(k,j)) }
     caract[j,1]<-round(veccor[ordrecov[1]],2) 
@@ -108,8 +108,8 @@ for (k in 1:K)
   if (nrow(caract)==1) {
     groups[[k]]<-caract  
   }else{
-    if (method==1) groups[[k]]<-caract[order(abs(caract[,1]),decreasing =T),] 
-    if (method==2) groups[[k]]<-caract[order(caract[,1],decreasing =T),]
+    if (method==1) groups[[k]]<-caract[order(abs(caract[,1]),decreasing =TRUE),] 
+    if (method==2) groups[[k]]<-caract[order(caract[,1],decreasing =TRUE),]
   }
   
   # sign modification if necessary

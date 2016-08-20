@@ -1,7 +1,13 @@
 clvk_kp1 <- function(X,n,p,sbegin,EXTr,EXTu,Xu,Xr,method,K,comp,groupes,a,u,iter.max,nstart,rho)
 {
-  
-epsil=0.00001
+ 
+  # verification if there are NA values
+  valmq=FALSE
+  if (sum(is.na(X))>0)  {
+    valmq=TRUE
+    tauxNA=sum(is.na(X))/(n*p)
+   } 
+ epsil=0.00001
 ################################################
 # when the variables form only one cluster  
 if (K==1){
@@ -25,8 +31,8 @@ if (K==1){
     ind<-which(groupes_tmp[1:p]==k)
     if (length(ind) > 0) {
         for (j in 1:length(ind)) {
-          if (method==2) { critere[k] = critere[k] + (rho*sqrt(var(X[,ind[j]])) )  }
-          if (method==1) { critere[k] = critere[k] + (rho^2*var(X[,ind[j]]) ) }
+          if (method==2) { critere[k] = critere[k] + (rho*sqrt(var(X[,ind[j]],na.rm=TRUE)) )  }
+          if (method==1) { critere[k] = critere[k] + (rho^2*var(X[,ind[j]],na.rm=TRUE) ) }
         }
     }  
     
@@ -70,8 +76,8 @@ for (i in 1:iter.max) {
   ind<-which(groupes_tmp[1:p]==k)
     if (length(ind) > 0) {
       for (j in 1:length(ind)) {
-        if (method==2) { critere[k] = critere[k] + (rho*sqrt(var(X[,ind[j]])) )  }
-        if (method==1) { critere[k] = critere[k] + (rho^2*var(X[,ind[j]]) ) }
+        if (method==2) { critere[k] = critere[k] + (rho*sqrt(var(X[,ind[j]],na.rm=TRUE)) )  }
+        if (method==1) { critere[k] = critere[k] + (rho^2*var(X[,ind[j]],na.rm=TRUE) ) }
     }
   }
 
@@ -125,8 +131,8 @@ crit_trials<-sum(critere)
               ind2<-which(groupes_tmp2[1:p]==k)
                if (length(ind2) > 0) {
                 for (j in 1:length(ind2)) {
-                  if (method==2) { critere2[k] = critere2[k] + (rho*sqrt(var(X[,ind2[j]])) )  }
-                  if (method==1) { critere2[k] = critere2[k] + (rho^2*var(X[,ind2[j]]) )      }
+                  if (method==2) { critere2[k] = critere2[k] + (rho*sqrt(var(X[,ind2[j]],na.rm=TRUE)) )  }
+                  if (method==1) { critere2[k] = critere2[k] + (rho^2*var(X[,ind2[j]],na.rm=TRUE) )      }
                 }
               }  
    

@@ -4,10 +4,10 @@
 \alias{summary.clv}
 \title{summary and description of the clusters of variables}
 \usage{
-\method{summary}{clv}(object, K = NULL,...)
+\method{summary}{clv}(object, K = NULL, ...)
 }
 \arguments{
-\item{object}{: an object of class of clv (from CLV()) or CLV_kmeans() functions)}
+\item{object}{: result of CLV() or CLV_kmeans()}
 
 \item{K}{: the number of clusters (unless if CLV_kmeans was used)}
 
@@ -25,6 +25,6 @@ The ouputs include :
   and the correlation with the next neighbouring group latent component are given.  \cr
 \item the proportion of the variance within each group explained by its latent variable, \cr
  \item the proportion of the whole dataset account by the group latent variables \cr
- \item the matrix of correlation between the latent variables. }
+ \item the matrix of correlation between the latent variables.}
 }
 
