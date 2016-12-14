@@ -1,6 +1,6 @@
-#' To get the sparse loadings in each cluster when using the "sparselv" strategy
+#' @title sparse loadings in each cluster when using the "sparselv" strategy
 #' 
-#' Applies only on CLV_kmeans output with strategy="sparselv".
+#' @description Applies only on CLV_kmeans output with strategy="sparselv".
 #' 
 #' @param resclv : result of CLV_kmeans() 
 #'  

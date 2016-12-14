@@ -55,7 +55,7 @@ imput_clv =  function (x,X0,K=NULL)
     }
   }
 
-  if (length(table(clust))<K) {stop("K distincts Latent Variables can not be defined . Try the imputation with a lower value for parameter K.")}
+  if (length(table(clust))<K) {stop("K distincts Latent Variables can not be defined. Try the imputation with a lower value for parameter K.")}
   
   out<-NULL
   if (strategy=="kplusone") {
@@ -92,7 +92,7 @@ imput_clv =  function (x,X0,K=NULL)
   Ximputback<-as.data.frame(Ximputback)
   indic<-is.na(X0)
   XX0<-X0
-  XX0[which(is.na(X0))]<-0
+  XX0[(is.na(X0))]<-0
   X0imput<-((!indic)*XX0)+ (indic*(Ximputback))
  
   rownames(X0imput)=rownames(X0)

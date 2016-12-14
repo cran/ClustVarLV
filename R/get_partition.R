@@ -1,6 +1,6 @@
-#' To get the clusters of variables. 
+#' @title To get the clusters of variables. 
 #' 
-#' This function returns the group's membership for the p variables. 
+#' @description This function returns the group's membership for the p variables. 
 #' The output can be a vector p x 1 of integers between 1 and K, 
 #' or a binary matrix of size p x n.
 #' 

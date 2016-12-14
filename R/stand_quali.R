@@ -1,5 +1,7 @@
 #' @title Standardization of the qualitative variables
 #' 
+#' @description pretreatment of qualitative variables
+#' 
 #' @param X.quali : a factor or a data frame with several factors
 #' @param metric : the metric to be used, i.e. each category is weighted by the inverse of the square-root of its relative frequency
 #'

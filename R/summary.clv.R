@@ -92,12 +92,12 @@ for (k in 1:K)
   if (method==2) colnames(caract)<-c("cor in group"," cor next group")
       
   for (j in 1:ncol(Xgroup))    {
-    veccov<-cov(Xgroup[,j],lvstd) #covariance between var j and the latent variable of its group (k)
-    veccor<-cor(Xgroup[,j],latvar) #correlation between var j and the latent variable of ist group (k)
+    veccov<-cov(Xgroup[,j],lvstd,use="pairwise.complete.obs") #covariance between var j and the latent variable of its group (k)
+    veccor<-cor(Xgroup[,j],latvar,use="pairwise.complete.obs") #correlation between var j and the latent variable of ist group (k)
     if (method==1) ordrecov<-order(veccov^2,decreasing=TRUE)
     if (method==2) ordrecov<-order(veccov,decreasing=TRUE)
-    verif<-(ordrecov[1]==k) 
-    if (verif==F) {print (c(k,j)) }
+#     verif<-(ordrecov[1]==k) 
+#     if (verif==F) {print (c(k,j)) }
     caract[j,1]<-round(veccor[ordrecov[1]],2) 
     if (method==1) caract[j,2]<-round(abs(veccor[ordrecov[2]]),2)
     if (method==2) caract[j,2]<-round(veccor[ordrecov[2]],2)
@@ -139,9 +139,9 @@ for (k in 1:K)
 #      CLVcp[,k]<-ressvd$u[,1]*ressvd$d[1]
 #      eigval<-svd(Xgroup)$d^2
 #      prop_within[k]<-eigval[1]/sum(eigval)
-       prop_within[k]<-var(CLVcp[,k])/sum(apply(Xgroup,2,var))
+       prop_within[k]<-var(CLVcp[,k],na.rm=TRUE)/sum(apply(Xgroup,2,var,na.rm=TRUE))
    }
-   prop_tot<-sum(apply(CLVcp,2,var))/sum(apply(X,2,var))
+   prop_tot<-sum(apply(CLVcp,2,var,na.rm=TRUE))/sum(apply(X,2,var,na.rm=TRUE))
   }
 
   
