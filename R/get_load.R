@@ -1,4 +1,4 @@
-#' @title loadings of the external variables in each cluster
+#' @title Loadings of the external variables in each cluster
 #' 
 #' @description To get the loadings of the external variables regarding the latent variable in each cluster 
 #' Applies only when external variables (Xr, Xu or both) are involved.

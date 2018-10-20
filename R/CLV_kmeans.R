@@ -156,7 +156,6 @@ CLV_kmeans <- function(X,Xu=NULL,Xr=NULL,method,sX=TRUE,sXr=FALSE,sXu=FALSE,
            
   if (length((intersect(strategy,c("kplusone","sparselv","none"))))==0) 
       stop("strategy must be either 'kplusone', 'sparselv', 'none'")
- 
   if (strategy=="kplusone" & (EXTu!=0 | EXTr!=0) )
        stop(" 'k+1' strategy is not available with external variables, yet")
   if (strategy=="sparselv" & (EXTu!=0 | EXTr!=0) )

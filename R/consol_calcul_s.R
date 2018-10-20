@@ -4,8 +4,9 @@ function(method,X,EXTr,Xr,EXTu,Xu,ind,max.iter=20, eps = 0.001,rlevel)
 {
   n<-nrow(X)
   p<-ncol(X)
-  Xk<-as.matrix(X[,ind])
-  pk<-length(ind)                                            
+  pk<-length(ind)    
+  if (pk==1)   Xk<-matrix(X[,ind],dimnames=list(rownames(X),colnames(X)[ind]))
+  if (pk>1)    Xk<-as.matrix(X[,ind])
   # verification if there are NA values
   valmq=FALSE
   if (sum(is.na(Xk))>0)  valmq=TRUE
@@ -61,14 +62,15 @@ function(method,X,EXTr,Xr,EXTu,Xu,ind,max.iter=20, eps = 0.001,rlevel)
       para = rlevel*apply(Xk,2,sd,na.rm=TRUE)
       #beta = dur(cova,para)
                                    
-      beta = soft(cova,para) 
+      beta = soft(cova,para)   
       temp <- beta   # in order to check convergence 
       temp <- temp/normvec(temp)
       
       k <- 0
       diff <- 1
+                       if ((mean(temp)==0)&(sd(temp)==0))  k=max.iter
       while ((k < max.iter) & (diff > eps)) {
-        k <- k + 1 
+      k <- k + 1 
        if (!valmq) {
            alpha <- t(Xk)%*%Xk%*%beta/normvec(t(Xk)%*%Xk%*%beta)
 #           Ck = Xk%*%alpha/normvec(Xk%*%alpha)
@@ -85,10 +87,9 @@ function(method,X,EXTr,Xr,EXTu,Xu,ind,max.iter=20, eps = 0.001,rlevel)
                                         
 #       beta = dur(cova,para)
         beta = soft(cova,para)
-                                       
-       beta2 = beta/normvec(beta)
-       diff <- mean(abs(beta2 - temp))
-       temp <- beta2
+        beta2 = beta/normvec(beta)
+        diff <- mean(abs(beta2 - temp))
+        temp <- beta2
          
       }  # end of loop of iteration "k"
                             
@@ -96,17 +97,22 @@ function(method,X,EXTr,Xr,EXTu,Xu,ind,max.iter=20, eps = 0.001,rlevel)
       colnames(beta) = "loading" 
       loading=beta
       rownames(loading)= colnames(Xk)
+                                 
       
       XXk<-Xk
       XXk[which(is.na(Xk))]<-0
       comp<-XXk%*%beta 
-                                         
-      veccor<-cor(comp,Xk,use="pairwise.complete.obs")
-      jj<-which.max(abs(veccor))  # modification of the sign of comp so that it is positively correlated with the closest variable  
-      comp =sign(veccor[jj])*comp 
+       
+      if (sd(comp)>0)  {                                 
+        veccor<-cor(comp,Xk,use="pairwise.complete.obs")
+        jj<-which.max(abs(veccor))  # modification of the sign of comp so that it is positively correlated with the closest variable  
+        comp =sign(veccor[jj])*comp 
       
-      compnorm=scale(comp)
-      critere<-sum(cov(Xk,compnorm,use="pairwise.complete.obs")^2)
+        compnorm=scale(comp)
+        critere<-sum(cov(Xk,compnorm,use="pairwise.complete.obs")^2)
+      } else {
+        critere=0
+      }
       
       res<-list(comp=comp,loading=loading,critere=critere)
  

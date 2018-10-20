@@ -1,13 +1,13 @@
 ---
-title: "Getting started with ClustVarLV. version 1.5.1"
+title: "Getting started with ClustVarLV. version 1.6.0"
 author: "Evelyne Vigneau"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 
 vignette: >
-  %\VignetteIndexEntry{Getting started with ClustVarLV. version 1.5.0}
+  %\VignetteIndexEntry{Getting started with ClustVarLV. version 1.6.0}
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+  %\usepackage[utf8]{inputenc}
 --- 
 #
 #
@@ -55,6 +55,7 @@ plot(resclv_senso,"delta")
 
 The graph of the variation of the clustering criterion between a partition into K clusters and a partition into (K-1) clusters (after consolidation) is useful for determining the number of clusters to be retained.
 Because the criterion clearly jumps when passing from 4 to 3 groups,  a partition into 4 groups is retained.
+
 
 ```{r}
 # Summary the CLV results for a partition into 4 groups

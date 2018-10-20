@@ -27,4 +27,3 @@ The ouputs include :
  \item the proportion of the whole dataset account by the group latent variables \cr
  \item the matrix of correlation between the latent variables.}
 }
-

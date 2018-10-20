@@ -12,6 +12,8 @@ function(method,X12,EXTr,Xr,EXTu,Xu12,tauxNA=0)
     if((EXTr==0)&(EXTu==0)) {
       xnew<- X12  
       if(!valmq) {
+        # if (dim(xnew)[1]>dim(xnew)[2]) vp = powerEigen( crossprod(xnew))
+        # else vp = powerEigen( tcrossprod(xnew))
         if (dim(xnew)[1]>dim(xnew)[2]) vp = eigen( t(xnew) %*% xnew)
         else vp = eigen( xnew %*% t(xnew))
         crit = vp$values[1] /(n-1)  
@@ -27,6 +29,8 @@ function(method,X12,EXTr,Xr,EXTu,Xu12,tauxNA=0)
     }   
     if((EXTr==1)&(EXTu==0)) {
       xnew<- t(Xr)%*%X12  
+      # if (dim(xnew)[1]>dim(xnew)[2]) vp = powerEigen( crossprod(xnew))
+      # else vp = powerEigen( tcrossprod(xnew))
       if (dim(xnew)[1]>dim(xnew)[2]) vp = eigen( t(xnew) %*% xnew)
       else vp = eigen( xnew %*% t(xnew))
       crit = vp$values[1] /(n-1)  
@@ -34,6 +38,8 @@ function(method,X12,EXTr,Xr,EXTu,Xu12,tauxNA=0)
     if((EXTr==0)&(EXTu==1))  {
       P<-X12 %*% Xu12
       B<-t(X12)%*%P
+      # vp <- powerEigen( crossprod(B))
+      # alpha2<-powerEigen(crossprod(P))$values[1]
       vp <- eigen(t(B) %*% B)
       alpha2<-eigen(t(P)%*%P)$values[1]
       crit= vp$values[1]/((n-1)*alpha2)
@@ -63,7 +69,7 @@ function(method,X12,EXTr,Xr,EXTu,Xu12,tauxNA=0)
     }
     if ((EXTu==1)&(EXTr==0)){
       P=X12 %*% Xu12
-      alpha2<-sum(diag(t(P)%*%P))
+      alpha2<-sum(diag(crossprod((P))))
       xbar = X12 %*% matrix(1,pk,1) /pk       
       pxbar=sqrt (t(xbar)%*%P%*%t(P)%*%xbar)
                  if (is.nan(pxbar)) { print(Xu12)}

@@ -23,4 +23,3 @@ This function plots either the CLV dendrogram or the variations of the consolida
 \seealso{
 CLV
 }
-

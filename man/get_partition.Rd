@@ -2,12 +2,7 @@
 % Please edit documentation in R/get_partition.R
 \name{get_partition}
 \alias{get_partition}
-\title{To get the clusters of variables}
-
-\description{This function returns the group's membership for the p variables. 
-The output can be a vector p x 1 of integers between 1 and K, 
-or a binary matrix of size p x n.}
-
+\title{Clusters of variables.}
 \usage{
 get_partition(resclv, K = NULL, type = "vector")
 }
@@ -21,10 +16,14 @@ get_partition(resclv, K = NULL, type = "vector")
 \value{
 \item{partition}{the group's membership for the variables) }
 }
+\description{
+To get the clusters of variables. This function returns the group's membership for the p variables. 
+The output can be a vector p x 1 of integers between 1 and K, 
+or a binary matrix of size p x n.
+}
 \examples{
 data(apples_sh)
 resclvX <- CLV(X = apples_sh$senso, method = "directional", sX = TRUE)
 parti4G<-get_partition(resclvX, K = 4) 
 
 }
-

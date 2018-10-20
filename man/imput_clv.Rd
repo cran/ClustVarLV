@@ -24,4 +24,3 @@ For each variable, its missing data will be imputed according to the values of t
 \details{
 It is adviced to use a larger number of latent variables, on the basis of which the imputation will be done, than the suspected 'true' number of groups of variables
 }
-

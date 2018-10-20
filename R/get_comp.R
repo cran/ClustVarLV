@@ -1,6 +1,6 @@
 #' @title latent variables associated with each cluster
 #' 
-#' @description To get the latent variables associated with each cluster
+#' @description To get the latent variables associated with each cluster.
 #' 
 #' @param resclv : result of CLV(), CLV_kmeans() or LCLV()
 #' @param K : the number of groups chosen (already defined if CLV_kmeans is used)

@@ -35,4 +35,3 @@ resclvX <- CLV(X = apples_sh$senso, method = 1, sX = TRUE)
 plot_var(resclvX, K = 4, axeh = 1, axev = 2)
 
 }
-

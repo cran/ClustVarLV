@@ -31,14 +31,14 @@ function(method,X,EXTr,Xr,EXTu,Xu)
     } 
     if ((EXTu==0)&(EXTr==1)){ 
       if (valmq) stop("The matrix X contains missing values. Use a X matrix without missing value for CLV with external data")
-        px<-sqrt (diag(t(X)%*%Xr%*%t(Xr)%*%X))
+        px<-sqrt (diag(tcrossprod(t(X)%*%Xr)))
         crit<- px/(n-1)
     } 
     if ((EXTu==1)&(EXTr==0)){
       if (valmq) stop("The matrix X contains missing values. Use a X matrix without missing value for CLV with external data")
       crit=c()
       for (i in 1:p) {
-        critk<- sqrt((t(X[,i])%*%X[,i])/(n-1))
+        critk<- sqrt(crossprod(X[,i])/(n-1))
         crit=c(crit,critk)
       }
     }

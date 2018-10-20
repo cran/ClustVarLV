@@ -3,8 +3,6 @@
 \name{get_comp}
 \alias{get_comp}
 \title{latent variables associated with each cluster}
-\description{To get the latent variables associated with each cluster}
-
 \usage{
 get_comp(resclv, K = NULL)
 }
@@ -20,10 +18,12 @@ get_comp(resclv, K = NULL)
      compc : The latent variables of the clusters defined according to the Xu variables
      }
 }
+\description{
+To get the latent variables associated with each cluster.
+}
 \examples{
 data(apples_sh)
 resclvX <- CLV(X = apples_sh$senso, method = "directional", sX = TRUE)
 comp4G<-get_comp(resclvX, K = 4) 
 
 }
-

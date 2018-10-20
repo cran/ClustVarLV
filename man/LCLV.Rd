@@ -62,4 +62,3 @@ Vigneau, E., Charles, M.,& Chen, M. (2014). External preference segmentation wit
 
 Vigneau E., Chen M., Qannari E.M. (2015). ClustVarLV:  An R Package for the clustering of Variables around Latent Variables. The R Journal, 7(2), 134-148
 }
-

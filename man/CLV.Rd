@@ -4,8 +4,8 @@
 \alias{CLV}
 \title{Hierarchical clustering of variables with consolidation}
 \usage{
-CLV(X, Xu = NULL, Xr = NULL, method = NULL, sX = TRUE, sXr = FALSE,
-  sXu = FALSE, nmax = 20, maxiter = 20)
+CLV(X, Xu = NULL, Xr = NULL, method = NULL, sX = TRUE,
+  sXr = FALSE, sXu = FALSE, nmax = 20, maxiter = 20)
 }
 \arguments{
 \item{X}{: The matrix of variables to be clustered}
@@ -81,4 +81,3 @@ Vigneau E., Chen M., Qannari E.M. (2015). ClustVarLV:  An R Package for the clus
 \seealso{
 CLV_kmeans, LCLV
 }
-

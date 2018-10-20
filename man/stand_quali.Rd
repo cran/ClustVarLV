@@ -3,8 +3,6 @@
 \name{stand_quali}
 \alias{stand_quali}
 \title{Standardization of the qualitative variables}
-\description{pretreatment of qualitative variables}
-
 \usage{
 stand_quali(X.quali, metric = "chisq")
 }
@@ -16,4 +14,6 @@ stand_quali(X.quali, metric = "chisq")
 \value{
 Xdisj.sd : a standardized matrix with as many columns as categories associated with the qualitative variables.
 }
-
+\description{
+pretreatment of qualitative variables
+}

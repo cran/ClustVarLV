@@ -4,8 +4,9 @@ function(method,X,EXTr,Xr,EXTu,Xu,ind)
 {
   n<-nrow(X)
   p<-ncol(X)
-  Xk<-as.matrix(X[,ind])
   pk<-length(ind)
+  if (pk==1)   Xk<-matrix(X[,ind],dimnames=list(rownames(X),colnames(X)[ind]))
+  if (pk>1)    Xk<-as.matrix(X[,ind])
   # verification if there are NA values
   valmq=FALSE
   if (sum(is.na(Xk))>0)  valmq=TRUE
@@ -33,25 +34,31 @@ function(method,X,EXTr,Xr,EXTu,Xu,ind)
       if ( dim(Xr)[2] > dim(Xk)[2]   ) {  
         vp <- eigen( t(t(Xr)%*%Xk)%*%t(Xr)%*%Xk)
         a<-t(Xr)%*%Xk%*%vp$vectors[,1]%*%(vp$values[1])^(-1/2)
+        #vp <- powerEigen( crossprod(t(Xr)%*%Xk))
+        # a<-t(Xr)%*%Xk%*%vp$vectors%*%(vp$values)^(-1/2)
        } else {
-        vp <- eigen(t(Xr)%*%Xk %*% t(t(Xr)%*%Xk))
-        a<- vp$vectors[,1] 
+        # vp <- powerEigen(tcrossprod(t(Xr)%*%Xk))
+        # a<- vp$vectors 
+         vp <- eigen(t(Xr)%*%Xk %*% t(t(Xr)%*%Xk))
+         a<- vp$vectors[,1] 
     }  
                      
       comp<- Xr%*% a        
       jj<-which.max(cor(comp,Xk))  # modification of the sign of comp so that it is positively correlated with the closest variable  
       if (cor(comp,Xk[,jj])<0) comp=(-1)*comp
-      critere<-  vp$values[1] /(n-1)
+      critere<-  vp$values /(n-1)
       res<-list(comp=comp,a=a,critere=critere)
     }
     if ((EXTr==0)&(EXTu==1)) {
       P<-Xk %*% Xu[ind,]
       if(sum(P^2)==0) stop("error in P")
       B<-t(Xk)%*% P
+      #vp = powerEigen( B)
+      #alpha2<-powerEigen(P)$values
       vp = eigen(t(B) %*% B)
       alpha2<-eigen(t(P)%*%P)$values[1] 
-      crit<- vp$values[1]/((n-1)*alpha2)      
-      u<-vp$vectors[,1]
+      crit<- vp$values/((n-1)*alpha2)      
+      u<-vp$vectors
       comp<-P%*%u /sqrt(alpha2)
       jj<-which.max(cor(comp,P))  # modification of the sign of comp so that it is positively correlated with the closest variable  
       if (cor(comp,P[,jj])<0) comp=(-1)*comp
@@ -78,7 +85,7 @@ function(method,X,EXTr,Xr,EXTu,Xu,ind)
       aa = t(Xr)%*% Xk %*% matrix(1,pk,1) /pk
       a<-aa/as.numeric(sqrt(t(aa)%*%aa))
       comp<-(Xr%*%a)
-      critere<-pk*sqrt(t(aa)%*%aa)/(n-1)
+      critere<-pk*sqrt(crossprod(aa))/(n-1)
       res<-list(comp=comp,a=a,critere=critere)
     }
     if ((EXTu==1)& (EXTr==0)) {

@@ -2,10 +2,7 @@
 % Please edit documentation in R/get_load.R
 \name{get_load}
 \alias{get_load}
-\title{loadings of the external variables in each cluster}
-
-\description{To get the loadings of the external variables regarding the latent variable in each cluster. Applies only when external variables (Xr, Xu or both) are involved.}
-
+\title{Loadings of the external variables in each cluster}
 \usage{
 get_load(resclv, K = NULL)
 }
@@ -21,4 +18,7 @@ For results of LCLV, two types of ladings are defined : \cr
       loading_u : loadings of the external Xu variables.
      }
 }
-
+\description{
+To get the loadings of the external variables regarding the latent variable in each cluster 
+Applies only when external variables (Xr, Xu or both) are involved.
+}

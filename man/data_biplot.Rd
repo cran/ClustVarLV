@@ -21,4 +21,3 @@ data_biplot(X, sX = TRUE, axeh = 1, axev = 2, cex.lab = 1)
 Loading plot of the variables from a Principal Components Analysis.
 scores of the observations are surimposed
 }
-

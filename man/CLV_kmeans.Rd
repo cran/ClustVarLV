@@ -5,8 +5,8 @@
 \title{K-means algorithm for the clustering of variables}
 \usage{
 CLV_kmeans(X, Xu = NULL, Xr = NULL, method, sX = TRUE, sXr = FALSE,
-  sXu = FALSE, clust, iter.max = 20, nstart = 100, strategy = "none",
-  rho = 0.3)
+  sXu = FALSE, clust, iter.max = 20, nstart = 100,
+  strategy = "none", rho = 0.3)
 }
 \arguments{
 \item{X}{The matrix of the variables to be clustered}
@@ -76,4 +76,3 @@ Vigneau E., Chen M. (2016). Dimensionality reduction by clustering of variables 
 \seealso{
 CLV, LCLV
 }
-
