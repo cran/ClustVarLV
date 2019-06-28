@@ -2,14 +2,14 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 critcpp <- function(a, b) {
-    .Call(`_ClustVarLV_critcpp`, a, b)
+    .Call('_ClustVarLV_critcpp', PACKAGE = 'ClustVarLV', a, b)
 }
 
 mincpp <- function(a) {
-    .Call(`_ClustVarLV_mincpp`, a)
+    .Call('_ClustVarLV_mincpp', PACKAGE = 'ClustVarLV', a)
 }
 
 powerEigen <- function(X) {
-    .Call(`_ClustVarLV_powerEigen`, X)
+    .Call('_ClustVarLV_powerEigen', PACKAGE = 'ClustVarLV', X)
 }
 

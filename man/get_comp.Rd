@@ -2,24 +2,30 @@
 % Please edit documentation in R/get_comp.R
 \name{get_comp}
 \alias{get_comp}
-\title{latent variables associated with each cluster}
+\title{latent components associated with each cluster}
 \usage{
-get_comp(resclv, K = NULL)
+get_comp(resclv, K = NULL, graph = FALSE, cex.lab = 1)
 }
 \arguments{
-\item{resclv}{: result of CLV(), CLV_kmeans() or LCLV()}
+\item{resclv}{: result of CLV(), CLV_kmeans(), LCLV(), CLV3W() or CLV3W_km()}
 
-\item{K}{: the number of groups chosen (already defined if CLV_kmeans is used)}
+\item{K}{: the number of clusters chosen (already defined if CLV_kmeans or CLV3W_kmeans is used)}
+
+\item{graph}{: boolean, if TRUE, the barplot associated with the scores is displayed (default : graph=FALSE)}
+
+\item{cex.lab}{: magnification to be used for labels (1 by default)}
 }
 \value{
-\item{comp}{the group latent variables (centered, but not standardized) \cr
-     For results of LCLV, two types of latent variables are available : \cr
-     compt : The latent variables of the clusters defined according to the Xr variables, \cr
-     compc : The latent variables of the clusters defined according to the Xu variables
+\item{comp}{the group latent components (centered) \cr
+     For results of CLV(_kmeans), the latent components returned have their own norm \cr
+     For results of CLV3W(_kmeans), the latent component associated with mode 1 (centered, but not standardized)  \cr
+     For results of LCLV, two types of latent components are available : \cr
+     compt : The latent components of the clusters defined according to the Xr variables, \cr
+     compc : The latent components of the clusters defined according to the Xu variables
      }
 }
 \description{
-To get the latent variables associated with each cluster.
+To get the latent components associated with each cluster.
 }
 \examples{
 data(apples_sh)

@@ -36,11 +36,11 @@
       bsamp=sample(1:n,replace=TRUE)
       if (p<=1500) {
         resboot=CLV(X[bsamp,],method=method,sX=sX,nmax=nmax)
-        for (k in 1:nmax) {
+        for (k in 2:nmax) {
           resari=c(resari,ARI(get_partition(resclv,k),get_partition(resboot,k)))
         }
       } else {
-        for (k in 1:nmax) {
+        for (k in 2:nmax) {
           resboot=CLV_kmeans(X[bsamp,],method=method,sX=sX,clust=k,nstart=50)
           resari=c(resari,ARI(get_partition(resclv,k),get_partition(resboot)))
         } 
@@ -73,6 +73,7 @@
       }
    parallel::stopCluster(cl)   
   
+   resari=cbind(rep(NA,B),resari)
    mari=apply(resari,2,mean)
    binf=apply(resari,2,mean)-apply(resari,2,sd)
    bsup=apply(resari,2,mean)+apply(resari,2,sd)

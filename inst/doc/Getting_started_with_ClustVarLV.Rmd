@@ -1,11 +1,11 @@
 ---
-title: "Getting started with ClustVarLV. version 1.6.0"
+title: "Getting started with ClustVarLV"
 author: "Evelyne Vigneau"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 
 vignette: >
-  %\VignetteIndexEntry{Getting started with ClustVarLV. version 1.6.0}
+  %\VignetteIndexEntry{Getting started with ClustVarLV}
   %\VignetteEngine{knitr::rmarkdown}
   %\usepackage[utf8]{inputenc}
 --- 
@@ -15,7 +15,7 @@ vignette: >
 
 # beginners with ClustVarLV
 
-The ClustVarLV package is dedicated to the CLV method for the Clustering of Variables Around Latent Variables (Vigneau & Qannari,2003;Vigneau, Chen & Qannari (2015). 
+The ClustVarLV package is dedicated to the CLV method for the Clustering of Variables Around Latent Variables (Vigneau & Qannari,2003; Vigneau, Chen & Qannari, 2015). 
 
 ```{r}
 library(ClustVarLV)
@@ -113,7 +113,7 @@ table(get_partition(res.segext,K=2),get_partition(res.segext,K=3))
 
 Each latent variable being a linear combination of the external variables (sensory), it is possible to extract the associated loadings
 ```{r}
-get_load(res.segext,K=3)
+get_loading(res.segext,K=3)
 ```
 
 
@@ -194,7 +194,7 @@ get\_partition(resclv\_senso,K=4,type="vector")	     resclv\_senso[[4]]$clusters
 
 get\_comp(resclv\_senso,K=4)	                       resclv\_senso[[4]]$comp
 
-get\_load(res.segext,K=3)	                           res.segext[[3]]$loading
+get\_loading(res.segext,K=3)	                       res.segext[[3]]$loading
 
 res.clvkm.rd<-CLV\_kmeans(X = pref, Xr = senso,      res.clvkm.rd<-CLV\_kmeans(X = pref, Xr = senso, 
      method = "local", sX=TRUE, sXr = TRUE,                         method = 2, sX=TRUE, sXr = TRUE, 

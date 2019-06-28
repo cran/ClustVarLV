@@ -1,14 +1,8 @@
-#' @title sparse loadings in each cluster when using the "sparselv" strategy
-#' 
-#' @description Applies only on CLV_kmeans output with strategy="sparselv".
-#' 
-#' @param resclv : result of CLV_kmeans() 
-#' @param type : presented in the form of a "list" (one element by cluster, by default) or a "vector"
-#'  
-#' @return \item{sparse_loadings}{the loadings of the variables for each latent variables when the "sparselv strategy is used.}
-#'        
-#' @export
-#' 
+# sparse loadings in each cluster when using the "sparselv" strategy
+# Applies only on CLV_kmeans output with strategy="sparselv".
+# resclv : result of CLV_kmeans() 
+# type : presented in the form of a "list" (one element by cluster, by default) or a "vector"
+#  
 get_sparseload <-
   function(resclv,type="list")
   {

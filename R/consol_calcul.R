@@ -32,15 +32,15 @@ function(method,X,EXTr,Xr,EXTu,Xu,ind)
     }
     if((EXTr==1)&(EXTu==0)) {
       if ( dim(Xr)[2] > dim(Xk)[2]   ) {  
-        vp <- eigen( t(t(Xr)%*%Xk)%*%t(Xr)%*%Xk)
-        a<-t(Xr)%*%Xk%*%vp$vectors[,1]%*%(vp$values[1])^(-1/2)
-        #vp <- powerEigen( crossprod(t(Xr)%*%Xk))
-        # a<-t(Xr)%*%Xk%*%vp$vectors%*%(vp$values)^(-1/2)
+        # vp <- eigen( t(t(Xr)%*%Xk)%*%t(Xr)%*%Xk)
+        # a<-t(Xr)%*%Xk%*%vp$vectors[,1]%*%(vp$values[1])^(-1/2)
+        vp <- powerEigen( crossprod(t(Xr)%*%Xk))
+        a<-t(Xr)%*%Xk%*%vp$vectors%*%(vp$values)^(-1/2)
        } else {
-        # vp <- powerEigen(tcrossprod(t(Xr)%*%Xk))
-        # a<- vp$vectors 
-         vp <- eigen(t(Xr)%*%Xk %*% t(t(Xr)%*%Xk))
-         a<- vp$vectors[,1] 
+        vp <- powerEigen(tcrossprod(t(Xr)%*%Xk))
+        a<- vp$vectors
+         # vp <- eigen(t(Xr)%*%Xk %*% t(t(Xr)%*%Xk))
+         # a<- vp$vectors[,1] 
     }  
                      
       comp<- Xr%*% a        
@@ -53,10 +53,10 @@ function(method,X,EXTr,Xr,EXTu,Xu,ind)
       P<-Xk %*% Xu[ind,]
       if(sum(P^2)==0) stop("error in P")
       B<-t(Xk)%*% P
-      #vp = powerEigen( B)
-      #alpha2<-powerEigen(P)$values
-      vp = eigen(t(B) %*% B)
-      alpha2<-eigen(t(P)%*%P)$values[1] 
+      vp = powerEigen( B)
+      alpha2<-powerEigen(P)$values
+      # vp = eigen(t(B) %*% B)
+      # alpha2<-eigen(t(P)%*%P)$values[1] 
       crit<- vp$values/((n-1)*alpha2)      
       u<-vp$vectors
       comp<-P%*%u /sqrt(alpha2)

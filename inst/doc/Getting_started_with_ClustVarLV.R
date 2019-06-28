@@ -54,7 +54,7 @@ plot(res.segext,"delta")
 table(get_partition(res.segext,K=2),get_partition(res.segext,K=3))
 
 ## ------------------------------------------------------------------------
-get_load(res.segext,K=3)
+get_loading(res.segext,K=3)
 
 ## ------------------------------------------------------------------------
 res.clvkm.rd<-CLV_kmeans(X = pref, Xr = senso, method = "local", sX=TRUE,

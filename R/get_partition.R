@@ -1,15 +1,14 @@
-#' @title Clusters of variables. 
+#' @title clusters memberships for a partition into K clusters. 
 #' 
-#' @description To get the clusters of variables. This function returns the group's membership for the p variables. 
-#' The output can be a vector p x 1 of integers between 1 and K, 
-#' or a binary matrix of size p x n.
+#' @description To get the clusters memberships of the variables. 
 #' 
-#' 
-#' @param resclv : result of CLV(), CLV_kmeans() or LCLV()
-#' @param K : the number of groups chosen (already defined if CLV_kmeans is used)
-#' @param type : presented in the form of a "vector" (by default) or a "matrix"
-
-#' @return \item{partition}{the group's membership for the variables) }
+#' @param resclv : result of CLV(), CLV_kmeans(), LCLV(), CLV3W() or CLV3W_km()
+#' @param K : the number of clusters chosen (already defined if CLV_kmeans or CLV3W_kmeans is used)
+#' @param type : "vector" (by default) for output given as a vector of integers between 1 and K (with 0 for "kplusone" strategy), \cr
+#'               "matrix", the output given as a binary matrix of size p x n.
+#'
+#' @return \item{partition}{the group's membership for the variables, in a vector or matrix form. \cr
+#'                      For CLV3W object, a vector of memberships with mode 2) }
 #'   
 #' @examples data(apples_sh)
 #' resclvX <- CLV(X = apples_sh$senso, method = "directional", sX = TRUE)
@@ -21,27 +20,44 @@ get_partition <-
   function(resclv, K=NULL,type="vector")
   {
     
-    if (!inherits(resclv, c("clv","lclv"))) 
+    
+    if (!inherits(resclv, c("clv","lclv","clv3w"))) 
       stop("non convenient objects")
     
     X<-resclv$param$X
     libel<-colnames(X)
     
-    if(is.null(resclv$param$K)) { 
+    if(inherits(resclv,"clv")) {  
+     if(is.null(resclv$param$K)) { 
       if (is.null(K)) {K<- as.numeric(readline("Please, give the number of groups : "))}
-      clusters<-as.vector(resclv[[K]]$clusters[2,])
-    } else {
-      clusters<-as.vector(resclv$clusters[2,])
+       partition<-as.vector(resclv[[K]]$clusters[2,])
+     } else {
+       partition<-as.vector(resclv$clusters[2,])
       K<-resclv$param$K
+     }
+    names(partition)<-libel
     }
-    names(clusters)<-libel
     
-    if (type=="vector") return(partition=clusters)
+    if(inherits(resclv,"clv3w")) {  
+     appel      <- as.list(resclv$call)
+     if(is.null(eval.parent(appel$K))) { 
+      if (is.null(K)) {K<- as.numeric(readline("Please, give the number of groups : "))}
+      if ((K > resclv$param$gmax+1) | (K<1))
+        stop(paste("Consolidation not performed for ",K,"clusters"))
+      partition     <- as.vector(resclv[[K]]$clusters[2,])
+     } else {
+       K<-eval.parent(appel$K)
+       partition     <- as.vector(resclv$clusters[2,])
+     } 
+     names(partition)<-libel
+    }
+    
+   
+    if (type=="vector") return(partition=partition)
     if (type=="matrix") { 
-      clusters<-as.data.frame(clusters)
-      names(clusters)<-"G"
-      tab<-tabdisj(clusters)
+      partition<-as.data.frame(partition)
+      names(partition)<-"G"
+      tab<-tabdisj(partition)
       return(partition=tab)
     }
-      
   }

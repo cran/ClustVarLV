@@ -43,7 +43,11 @@ if(is.null(resclv$param$K)) {
 
 
 
-if (is.null(colnames(X)))  stop("Please set column names for the matrix X")
+if (is.null(colnames(X)))  {
+  # stop("Please set column names for the matrix X")
+  colnames(X)=paste("V.",1:ncol(X),sep="")
+}
+
 # pretreatment of X as in clv
 X<- scale(X, center=TRUE, scale=resclv$param$sX)
 p <- dim(X)[2] 

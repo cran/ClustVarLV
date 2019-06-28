@@ -2,14 +2,14 @@
 % Please edit documentation in R/lm_CLV.R
 \name{lm_CLV}
 \alias{lm_CLV}
-\title{linear model based on CLV : prediction of a response variable, y, based on clusters of explanatory variables, X.}
+\title{linear model based on CLV}
 \usage{
-lm_CLV(X, y, method = "directional", sX = sX, nbiter = 100,
-  strategy = "none", rho = 0.3, shrinkp = 1, validation = FALSE,
-  id.test = NULL)
+lm_CLV(X, y, method = "directional", sX = TRUE, shrinkp = 0.5,
+  strategy = "none", rho = 0.3, validation = FALSE, id.test = NULL,
+  maxiter = 100, threshold = 1e-05)
 }
 \arguments{
-\item{X}{: The matrix of the explanatory variables, to be clustered}
+\item{X}{: The matrix of the predictors, the variables to be clustered}
 
 \item{y}{: The response variable (numeric)}
 
@@ -17,35 +17,48 @@ lm_CLV(X, y, method = "directional", sX = sX, nbiter = 100,
 1 or "directional" : the squared covariance is used as a measure of proximity (directional groups). \cr    
 2 or "local"       : the covariance is used as a measure of proximity (local groups)}
 
-\item{sX}{: TRUE/FALSE, i.e. standardization or not of the columns X (TRUE by default)\cr
-(predefined -> cX = TRUE : column-centering of X)}
+\item{sX}{: TRUE/FALSE, i.e. standardization or not of the columns X (TRUE by default)}
 
-\item{nbiter}{: maximum number of steps (by default nbiter=100)}
+\item{shrinkp}{: shrinkage  paramater used in the boosting (max : 1, 0.5 by default)}
 
-\item{strategy}{: "none" (by default), or "kplusone" (an additional cluster for the noise variables),
-or "sparselv" (zero loadings for the noise variables)}
+\item{strategy}{: "none" (by default), or "kplusone" (an additional cluster for the unclassifiable variables),
+or "sparselv" (zero loadings for the unclassifiable variables)}
 
-\item{rho}{: a threshold of correlation between 0 and 1 (used for kplusone or sparselv strategies, 0.3 by default)}
-
-\item{shrinkp}{: shrinkage  paramater used in the boosting (1 by default)}
+\item{rho}{: a threshold of correlation between 0 and 1 (used in "kplusone" or "sparselv" strategy, 0.3 by default)}
 
 \item{validation}{TRUE/FALSE i.e. using a test set or not. By default no validation}
 
 \item{id.test}{: if validation==TRUE, the number of the observations used as test set}
+
+\item{maxiter}{: the maximum number of components extracted (100 by default)}
+
+\item{threshold}{: used in a stopping rule, when the relative calibration errors sum of squares stabilizes (10e-6 by default)}
 }
 \value{
-\item{Group}{a list of the groups of variables X iteratively extracted.}
+\item{Group}{a list of the groups of variables X in order of the first time extracted.}
 
-\item{Comp}{ a list of the latent variables associated with the groups of X variables extracted.}
+\item{Comp}{ a list of the latent components associated with the groups of X variables extracted.}
 
-\item{Load}{ a list for the loadings of the X variables according to the associated latent variable.}
+\item{Load}{ a list for the loadings of the X variables in the latent component.}
 
-\item{Beta}{ a list for the coefficients associated to the scaled predictors (X must to be scaled accordind to sX) regarding y .}
+\item{Alpha}{ a list of the regression coefficients to be applied to the latent components. \cr
+        The coefficients are aggregated when the same latent component is extracted several times during the iterative steps.}
+
+\item{Beta}{ a list of the beta coefficients to be applied to the scaled predictors. \cr
+        For a model with the A first latent components, the A first elements of the list must be added together.}
+
+\item{GroupImp}{ Group Importance i.e. the decrease of the residuals' variance provided by the CLV components in the model.}
+
+\item{RMSE.cal}{ the root mean square error for each observation of the data/training set, at each step of the procedure.}
+
+\item{RMSE.val}{ as RMSE.cal but for the test set, if provided.}
 }
 \description{
-boosted-liked procedure for identifying groups of explanatory variables (and the associated latent variable) specifically correlated with the response variable, y.
-Directional groups are considered. 
-Discarding spurious variables is allowed using the strategy and rho parameters.
+prediction of a response variable, y, based on clusters of predictors variables, X.
+boosted-liked procedure for identifying groups of predictors, 
+and their associated latent component,
+well correlated with the actual residuals of response variable, y.
+sparsity is allowed using the strategy options ("sparselv" or "kplusone") and the rho parameter.
 }
 \seealso{
 CLV, CLV_kmeans

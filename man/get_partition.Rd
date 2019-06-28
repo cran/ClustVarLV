@@ -2,24 +2,24 @@
 % Please edit documentation in R/get_partition.R
 \name{get_partition}
 \alias{get_partition}
-\title{Clusters of variables.}
+\title{clusters memberships for a partition into K clusters.}
 \usage{
 get_partition(resclv, K = NULL, type = "vector")
 }
 \arguments{
-\item{resclv}{: result of CLV(), CLV_kmeans() or LCLV()}
+\item{resclv}{: result of CLV(), CLV_kmeans(), LCLV(), CLV3W() or CLV3W_km()}
 
-\item{K}{: the number of groups chosen (already defined if CLV_kmeans is used)}
+\item{K}{: the number of clusters chosen (already defined if CLV_kmeans or CLV3W_kmeans is used)}
 
-\item{type}{: presented in the form of a "vector" (by default) or a "matrix"}
+\item{type}{: "vector" (by default) for output given as a vector of integers between 1 and K (with 0 for "kplusone" strategy), \cr
+"matrix", the output given as a binary matrix of size p x n.}
 }
 \value{
-\item{partition}{the group's membership for the variables) }
+\item{partition}{the group's membership for the variables, in a vector or matrix form. \cr
+                     For CLV3W object, a vector of memberships with mode 2) }
 }
 \description{
-To get the clusters of variables. This function returns the group's membership for the p variables. 
-The output can be a vector p x 1 of integers between 1 and K, 
-or a binary matrix of size p x n.
+To get the clusters memberships of the variables.
 }
 \examples{
 data(apples_sh)
