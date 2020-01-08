@@ -27,7 +27,7 @@ get_partition <-
     X<-resclv$param$X
     libel<-colnames(X)
     
-    if(inherits(resclv,"clv")) {  
+    if(inherits(resclv,c("clv","lclv"))) {  
      if(is.null(resclv$param$K)) { 
       if (is.null(K)) {K<- as.numeric(readline("Please, give the number of groups : "))}
        partition<-as.vector(resclv[[K]]$clusters[2,])

@@ -16,29 +16,29 @@ RcppExport SEXP _ClustVarLV_critcpp(SEXP aSEXP, SEXP bSEXP) {
     Rcpp::traits::input_parameter< SEXP >::type b(bSEXP);
     rcpp_result_gen = Rcpp::wrap(critcpp(a, b));
     return rcpp_result_gen;
-    END_RCPP
-}
+ END_RCPP
+ }
 // mincpp
- SEXP mincpp(SEXP a);
- RcppExport SEXP _ClustVarLV_mincpp(SEXP aSEXP) {
+SEXP mincpp(SEXP a);
+RcppExport SEXP _ClustVarLV_mincpp(SEXP aSEXP) {
     BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type a(aSEXP);
     rcpp_result_gen = Rcpp::wrap(mincpp(a));
     return rcpp_result_gen;
-    END_RCPP
-}
-// powerEigen
-Rcpp::List powerEigen(Eigen::MatrixXd& X);
-RcppExport SEXP _ClustVarLV_powerEigen(SEXP XSEXP) {
-    BEGIN_RCPP
+ END_RCPP
+ }
+ // powerEigen
+ Rcpp::List powerEigen(Eigen::MatrixXd& X);
+ RcppExport SEXP _ClustVarLV_powerEigen(SEXP XSEXP) {
+BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type X(XSEXP);
     rcpp_result_gen = Rcpp::wrap(powerEigen(X));
     return rcpp_result_gen;
-    END_RCPP
+END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {

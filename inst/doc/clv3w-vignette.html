@@ -245,46 +245,46 @@ summary(resclv3w_coffee,K=2)
 #&gt; $size
 #&gt; clusters
 #&gt;  1  2 
-#&gt; 44 40 
+#&gt; 45 39 
 #&gt; 
 #&gt; $prop_explained_per_cluster
-#&gt; [1] 21.334 24.321
+#&gt; [1] 20.860 24.945
 #&gt; 
 #&gt; $prop_explained_total
 #&gt; [1] 22.756
 #&gt; 
 #&gt; $comp
 #&gt;                 Comp1  Comp2
-#&gt; Vanilla         0.320  0.091
-#&gt; B.Rice          0.062 -0.223
-#&gt; Lemon          -0.527  0.428
-#&gt; Coffee.Flower  -0.440  0.251
-#&gt; Cedar           0.082 -0.391
-#&gt; Hazelnut        0.113  0.248
-#&gt; Coriander.Seed -0.157  0.006
-#&gt; Honey           0.354  0.129
-#&gt; Medicine        0.252 -0.425
-#&gt; Apricot        -0.361  0.284
-#&gt; Earth           0.232 -0.448
-#&gt; Hay             0.069  0.050
+#&gt; Vanilla        -0.320 -0.091
+#&gt; B.Rice         -0.062  0.223
+#&gt; Lemon           0.527 -0.428
+#&gt; Coffee.Flower   0.440 -0.251
+#&gt; Cedar          -0.082  0.391
+#&gt; Hazelnut       -0.113 -0.248
+#&gt; Coriander.Seed  0.157 -0.006
+#&gt; Honey          -0.354 -0.129
+#&gt; Medicine       -0.252  0.425
+#&gt; Apricot         0.361 -0.284
+#&gt; Earth          -0.232  0.448
+#&gt; Hay            -0.069 -0.050
 #&gt; 
 #&gt; $weight
 #&gt;               Comp1  Comp2
-#&gt; Calm         -0.208  0.185
-#&gt; Nostalgic    -0.190  0.221
-#&gt; Angry         0.217 -0.222
-#&gt; Disgusted     0.375 -0.372
-#&gt; Unique       -0.096  0.122
-#&gt; Excited      -0.142  0.207
-#&gt; Unpleasant    0.335 -0.331
-#&gt; Disappointed  0.239 -0.269
-#&gt; Free         -0.227  0.192
-#&gt; Surprised    -0.002 -0.015
-#&gt; Irritated     0.335 -0.307
-#&gt; Energetic    -0.221  0.263
-#&gt; Happy        -0.318  0.320
-#&gt; Well         -0.377  0.338
-#&gt; Amused       -0.280  0.269
+#&gt; Calm          0.208 -0.185
+#&gt; Nostalgic     0.190 -0.221
+#&gt; Angry        -0.217  0.222
+#&gt; Disgusted    -0.375  0.372
+#&gt; Unique        0.096 -0.122
+#&gt; Excited       0.142 -0.207
+#&gt; Unpleasant   -0.335  0.331
+#&gt; Disappointed -0.239  0.269
+#&gt; Free          0.227 -0.192
+#&gt; Surprised     0.002  0.015
+#&gt; Irritated    -0.335  0.307
+#&gt; Energetic     0.221 -0.263
+#&gt; Happy         0.318 -0.320
+#&gt; Well          0.377 -0.338
+#&gt; Amused        0.280 -0.269
 #&gt; 
 #&gt; $groups
 #&gt; $groups$`Cluster 1`
@@ -333,6 +333,7 @@ summary(resclv3w_coffee,K=2)
 #&gt; 79   0.226        0.855          0.657
 #&gt; 80   0.149        0.665          0.552
 #&gt; 82   0.178        0.747          0.632
+#&gt; 84   0.000       -0.611         -0.279
 #&gt; 
 #&gt; $groups$`Cluster 2`
 #&gt;    loading cor in.group cor next.group
@@ -348,7 +349,7 @@ summary(resclv3w_coffee,K=2)
 #&gt; 28   0.196        0.839          0.445
 #&gt; 29   0.136        0.592          0.439
 #&gt; 31   0.147        0.676          0.270
-#&gt; 32   0.137        0.562          0.263
+#&gt; 32   0.137        0.561          0.263
 #&gt; 35   0.224        0.896          0.639
 #&gt; 37   0.113        0.523          0.387
 #&gt; 39   0.137        0.598          0.371
@@ -375,7 +376,6 @@ summary(resclv3w_coffee,K=2)
 #&gt; 78   0.112        0.546          0.501
 #&gt; 81   0.208        0.806          0.304
 #&gt; 83   0.133        0.671          0.485
-#&gt; 84   0.000       -0.279         -0.611
 #&gt; 
 #&gt; 
 #&gt; $cormatrix
@@ -427,8 +427,8 @@ the number of starts associated with Candecomp Parafac is set up with cp.rand :<
 <pre><code class="r">table(get_partition(resclv3w_coffee,K=2),get_partition(res.clv3wkm.rd,K=2)) 
 #&gt;    
 #&gt;      1  2
-#&gt;   1  4 40
-#&gt;   2 38  2
+#&gt;   1  5 40
+#&gt;   2 38  1
 </code></pre>
 
 <h2>References</h2>

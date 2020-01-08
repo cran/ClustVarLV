@@ -11,7 +11,9 @@ lm_CLV(X, y, method = "directional", sX = TRUE, shrinkp = 0.5,
 \arguments{
 \item{X}{: The matrix of the predictors, the variables to be clustered}
 
-\item{y}{: The response variable (numeric)}
+\item{y}{: The response variable (usually numeric)
+If y is binary factor, indicator variable (0/1) is generated. A Bayes rule is used to compute class probabilities.\cr
+Performance criteria is RMSE for numerical variable; RMSE and error rate for binary factor. \cr}
 
 \item{method}{: The criterion to be use in the cluster analysis.  \cr
 1 or "directional" : the squared covariance is used as a measure of proximity (directional groups). \cr    
@@ -19,7 +21,8 @@ lm_CLV(X, y, method = "directional", sX = TRUE, shrinkp = 0.5,
 
 \item{sX}{: TRUE/FALSE, i.e. standardization or not of the columns X (TRUE by default)}
 
-\item{shrinkp}{: shrinkage  paramater used in the boosting (max : 1, 0.5 by default)}
+\item{shrinkp}{: shrinkage  paramater used in the boosting (max : 1, 0.5 by default). \cr
+If shrinkp is a vector of positive values greater than 0, and lower or equal to 1, the outputs are given for each value.}
 
 \item{strategy}{: "none" (by default), or "kplusone" (an additional cluster for the unclassifiable variables),
 or "sparselv" (zero loadings for the unclassifiable variables)}
@@ -44,14 +47,18 @@ or "sparselv" (zero loadings for the unclassifiable variables)}
 \item{Alpha}{ a list of the regression coefficients to be applied to the latent components. \cr
         The coefficients are aggregated when the same latent component is extracted several times during the iterative steps.}
 
-\item{Beta}{ a list of the beta coefficients to be applied to the scaled predictors. \cr
+\item{Beta}{ a list of the beta coefficients to be applied to the pretreated predictors. \cr
         For a model with the A first latent components, the A first elements of the list must be added together.}
 
 \item{GroupImp}{ Group Importance i.e. the decrease of the residuals' variance provided by the CLV components in the model.}
 
-\item{RMSE.cal}{ the root mean square error for each observation of the data/training set, at each step of the procedure.}
+\item{RMSE.cal}{ the root mean square error for the calibration set, at each step of the procedure.}
+
+\item{ERRrate.cal and rocAUC.cal}{ when y is a binary factor, the classification rate and the AUC for ROC, on the bassis of the calibration set, at each step of the procedure.}
 
 \item{RMSE.val}{ as RMSE.cal but for the test set, if provided.}
+
+\item{ERRrate.val and rocAUC.val}{as for calibration set but for the test set, if provided.}
 }
 \description{
 prediction of a response variable, y, based on clusters of predictors variables, X.
