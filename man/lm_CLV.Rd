@@ -4,9 +4,19 @@
 \alias{lm_CLV}
 \title{linear model based on CLV}
 \usage{
-lm_CLV(X, y, method = "directional", sX = TRUE, shrinkp = 0.5,
-  strategy = "none", rho = 0.3, validation = FALSE, id.test = NULL,
-  maxiter = 100, threshold = 1e-05)
+lm_CLV(
+  X,
+  y,
+  method = "directional",
+  sX = TRUE,
+  shrinkp = 0.5,
+  strategy = "none",
+  rho = 0.3,
+  validation = FALSE,
+  id.test = NULL,
+  maxiter = 100,
+  threshold = 1e-05
+)
 }
 \arguments{
 \item{X}{: The matrix of the predictors, the variables to be clustered}

@@ -4,7 +4,8 @@
 \name{coffee}
 \alias{coffee}
 \title{coffee data}
-\format{An object of class \code{"array"} with 12 odors (mode 1), 84 subjects (mode 2) and 15 emotions (mode 3):
+\format{
+An object of class \code{"array"} with 12 odors (mode 1), 84 subjects (mode 2) and 15 emotions (mode 3):
 \describe{
 \item{odors}{Vanilla, B.Rice, Lemon, Coffee.Flower, Cedar, Hazelnut,
 Coriander.Seed, Honey, Medicine, Apricot, Earth, Hay}
@@ -12,7 +13,8 @@ Coriander.Seed, Honey, Medicine, Apricot, Earth, Hay}
 \item{emotions}{Amused, Angry, Calm, Disappointed, Disgusted,
 Energetic, Excited, Free, Happy, Irritated,
 Nostalgic, Surprised, Unique, Unpleasant and Well}
-}}
+}
+}
 \usage{
 data(coffee)
 }
@@ -26,6 +28,5 @@ str(coffee)
 }
 \references{
 Cariou, V., & Wilderjans, T. F. (2018). Consumer segmentation in multi-attribute product evaluation by means of non-negatively constrained CLV3W. Food Quality and Preference, 67, 18-26.
-(\href{https://doi.org/10.1016/j.foodqual.2017.01.006}{ScienceDirect})
 }
 \keyword{datasets}

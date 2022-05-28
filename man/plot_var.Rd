@@ -4,8 +4,17 @@
 \alias{plot_var}
 \title{Representation of the variables and their group membership}
 \usage{
-plot_var(resclv, K = NULL, axeh = 1, axev = 2, label = FALSE,
-  cex.lab = 1, v_colors = NULL, v_symbol = FALSE, beside = FALSE)
+plot_var(
+  resclv,
+  K = NULL,
+  axeh = 1,
+  axev = 2,
+  label = FALSE,
+  cex.lab = 1,
+  v_colors = NULL,
+  v_symbol = FALSE,
+  beside = FALSE
+)
 }
 \arguments{
 \item{resclv}{results of CLV(), CLV_kmeans() or LCLV()}

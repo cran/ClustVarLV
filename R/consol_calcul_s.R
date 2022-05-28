@@ -25,7 +25,8 @@ function(method,X,EXTr,Xr,EXTu,Xu,ind,max.iter=20, eps = 0.001,rlevel)
     b <- sign(a) * b
     b 
   }
-  normvec <- function(a){     
+  normvec <- function(a)
+  {     
     b = sqrt(sum(a^2))         
     if (b==0) b = 1
     b
@@ -151,6 +152,7 @@ function(method,X,EXTr,Xr,EXTu,Xu,ind,max.iter=20, eps = 0.001,rlevel)
       
       k <- 0
       diff <- 1
+      
       while ((k < max.iter) & (diff > eps)) {
         k <- k + 1
         
@@ -161,14 +163,22 @@ function(method,X,EXTr,Xr,EXTu,Xu,ind,max.iter=20, eps = 0.001,rlevel)
           alpha <- beta/b
           if (!valmq) {
              Cmean = Xk%*%alpha
-             Ck = scale(Cmean)  
+             if (sd(Cmean)>0) {
+                Ck = scale(Cmean)  
+             } else { 
+               Ck = Cmean  
+             }
              cova = cov(Xk,Ck)
           }
           if (valmq) {
             XXk<-Xk
             XXk[which(is.na(Xk))]<-0
             Cmean = XXk%*%alpha
-            Ck = scale(Cmean)  
+            if (sd(Cmean)>0) {
+              Ck = scale(Cmean)  
+            } else { 
+              Ck = Cmean  
+            }
             cova = t(covamiss(Xk,Ck,method))
           }
         # beta = dur(cova,para)
@@ -188,8 +198,13 @@ function(method,X,EXTr,Xr,EXTu,Xu,ind,max.iter=20, eps = 0.001,rlevel)
       rownames(loading)= colnames(Xk)
       colnames(loading) = "loading"  
  
-      compnorm=scale(comp)
-      critere<-sum(cov(Xk,compnorm,use="pairwise.complete.obs"))
+      if (sd(comp)>0) {
+        compnorm=scale(comp)
+        critere<-sum(cov(Xk,compnorm,use="pairwise.complete.obs"))
+      } else {
+        compnorm=comp
+        critere=0
+      }
       res<-list(comp=comp,loading=loading,critere=critere)
 
   }

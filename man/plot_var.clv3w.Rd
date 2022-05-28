@@ -4,9 +4,18 @@
 \alias{plot_var.clv3w}
 \title{Scores plot from a Candecomp Parafac analysis. The group membership of the variables is superimposed.}
 \usage{
-plot_var.clv3w(resclv3w, K = NULL, axeh = 1, axev = 2,
-  labels = FALSE, cex.lab = 1, v_colors = NULL, v_symbol = FALSE,
-  beside = FALSE, mode3 = FALSE)
+plot_var.clv3w(
+  resclv3w,
+  K = NULL,
+  axeh = 1,
+  axev = 2,
+  labels = FALSE,
+  cex.lab = 1,
+  v_colors = NULL,
+  v_symbol = FALSE,
+  beside = FALSE,
+  mode3 = FALSE
+)
 }
 \arguments{
 \item{resclv3w}{the data matrix}

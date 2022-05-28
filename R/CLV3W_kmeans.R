@@ -18,19 +18,20 @@
 #'         FALSE : loading coefficients may be either positive or negative
 #' @param   init : either the number of random starts i.e. partitions generated for the initialisation (By default init=10)
 #' @param cp.rand : number of random starts associated with the one rank Candecomp/Parafac model (By default cp.rand=10)
-#' @return \item{}{
+#' @return  \item{results}{
 #'          \itemize{
-#'                \item {clusters}{ :  in line 1, the groups membership in the initial partition; in line 2 the final groups membership }
-#'                \item {comp}{ : the latent components of the clusters associated with the first mode }
-#'                \item {loading}{ : the vector of loadings  associated with the second mode by cluster }
-#'                \item {weigth}{ : the vector of weights  associated with the third mode by cluster }
-#'                \item {criterion}{ : vector of loss giving for each cluster the residual amount between the sub-array and its reconstitution associated with the cluster one rank PARAFAC model}
-#'                \item {niter}{ : number of iterations of the partitioning alorithm}
+#'             \item {clusters}{:  in line 1, the groups membership in the initial partition; in line 2 the final groups membership }
+#'             \item {comp}{: the latent components of the clusters associated with the first mode }
+#'             \item {loading}{: the vector of loadings  associated with the second mode by cluster }
+#'             \item {weigth}{: the vector of weights  associated with the third mode by cluster }
+#'             \item {criterion}{: vector of loss giving for each cluster the residual amount between the sub-array and its reconstitution associated with the cluster one rank PARAFAC model}
+#'             \item {niter}{: number of iterations of the partitioning alorithm}
 #'          }}
-#'  @return \item{param}{ contains the clustering parameters
+#' @return  \item{param}{contains the clustering parameters
 #'          \itemize{
-#'                \item {X}{ : the scaled three-way array}
+#'                \item {X}{: the scaled three-way array}
 #'          }}
+#'   
 #' @return call : call of the method
 
 #' @seealso summary.clv3W, print.clv3W

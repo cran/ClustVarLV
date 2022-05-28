@@ -21,6 +21,8 @@
 #'        (predefined -> cXu= FALSE : no centering, Xu considered as a weight matrix)
 #' @param nmax : maximum number of partitions for which the consolidation will be done (by default nmax=20)
 #' @param maxiter : maximum number of iterations allowed for the consolidation/partitioning algorithm (by default maxiter=20)
+#' @param graph, TRUE/FALSE (by default TRUE) : dendrogram and variation of the optimization criterion. \cr 
+#'        These plots can also be obtained with "plot"
 #' 
 #' 
 #' @return \item{tabres}{ Results of the clustering algorithm.
@@ -58,7 +60,7 @@
 #'
 #' @export                
 #'                 
-CLV <- function(X,Xu=NULL,Xr=NULL,method=NULL,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=20,maxiter=20)
+CLV <- function(X,Xu=NULL,Xr=NULL,method=NULL,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=20,maxiter=20,graph=TRUE)
 {
   
  if(is.null(method)) stop('parameter method should be =1/"directional" or =2/"local"')
@@ -70,6 +72,8 @@ CLV <- function(X,Xu=NULL,Xr=NULL,method=NULL,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=2
  cXr=TRUE
  cXu=FALSE
  
+ # if colnames(X) is null, colnames(x) is created
+ if (is.null(colnames(X))) colnames(X)=paste("V.",1:ncol(X),sep="")
 
  # verification if some variables have constant values (standard deviation=0)
  who<-which(apply(X,2,sd,na.rm=TRUE)==0)
@@ -344,5 +348,19 @@ CLV <- function(X,Xu=NULL,Xr=NULL,method=NULL,sX=TRUE,sXr=FALSE,sXu=FALSE,nmax=2
 
  
  class(clvclt) = "clv"
+ 
+ if (graph) {
+  dev.new()
+  plot.clv(clvclt)
+  dev.new()
+  plot.clv(clvclt,"delta")
+ }
+ 
+ # estimation of a possible number of clusters using the LL and LML criteria
+ # proposed in Gupta, Datta & Das (2018). Pattern Recognition Letter, 116, 72-79
+ # for each partition size, k, evaluation of the maximum "rhok" between two group's LV  
+ # we consider, cor coeff if method="local" , abs (cor coeff) if method="directional" 
+ 
+ 
  return(clvclt) 
 }

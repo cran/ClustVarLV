@@ -4,11 +4,13 @@
 \name{apples_sh}
 \alias{apples_sh}
 \title{apples from southern hemisphere data set}
-\format{A data frame with 12 observations and 2 blocks of variables.
+\format{
+A data frame with 12 observations and 2 blocks of variables.
 \describe{
 \item{senso}{43 sensory attributes}
 \item{pref}{hedonic scores given by a panel of 60 consumers}
-}}
+}
+}
 \usage{
 data(apples_sh)
 }

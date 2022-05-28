@@ -4,8 +4,7 @@
 \alias{LCLV}
 \title{L-CLV for L-shaped data}
 \usage{
-LCLV(X, Xr, Xu, ccX = FALSE, sX = TRUE, sXr = FALSE, sXu = FALSE,
-  nmax = 20)
+LCLV(X, Xr, Xu, ccX = FALSE, sX = TRUE, sXr = FALSE, sXu = FALSE, nmax = 20)
 }
 \arguments{
 \item{X}{The matrix of variables to be clustered}

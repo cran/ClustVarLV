@@ -15,7 +15,9 @@ vignette: >
 
 # beginners with ClustVarLV
 
-The ClustVarLV package is dedicated to the CLV method for the Clustering of Variables Around Latent Variables (Vigneau & Qannari,2003; Vigneau, Chen & Qannari, 2015). 
+The ClustVarLV package is dedicated to the CLV method for the Clustering of Variables Around Latent Variables (Vigneau & Qannari,2003; Vigneau, Chen & Qannari, 2015).
+
+In presence of missing data, clustering and local imputations are simultaneously performed (Vigneau, 2018).
 
 ```{r}
 library(ClustVarLV)
@@ -39,11 +41,8 @@ The aim is to find groups of sensory attributes correlated, or anti-correlated, 
 Each group is associated with a latent component which makes it possible to identify the underlying sensory dimensions.
 
 ```{r, results="hide"}
-resclv_senso <- CLV(X = senso, method = "directional", sX = TRUE)
+resclv_senso <- CLV(X = senso, method = "directional", sX =TRUE)
 # option sX=TRUE means that each attribute will be auto-scaled (standard deviation =1)
-
-# Print of the 'clv' object 
-print(resclv_senso)
 ```
 
 ```{r, fig.width=3, fig.height=3}
@@ -172,35 +171,6 @@ By choosing rho=0.4, 8 out 60 consumers are assigned to the noise cluster. They 
 plot_var(CLV_kmeans(X = pref, method = "local", sX=TRUE, clust=3, nstart=20, strategy="kplusone",rho=0.4))
 ```
 
-
-## Warning : Changes with respect to the versions 1.1, 1.2 and 1.3 of the ClustVarLV package
-
-The changes are illustrated on the basis of the examples given above.
-
-------------------------------------------------------------------------------------------------
-from version 1.4.0                                   for earlier versions
---------------------------------------------         --------------------------------------------  
-resclv\_senso <- CLV(X = senso,method =              resclv\_senso <- CLV(X = senso,method=1,  
-"directional", sX = TRUE)                                           sX = TRUE, graph=TRUE)
-
-plot(resclv\_senso,"dendrogram");        
-      plot(resclv\_senso,"delta")	                                                                           
-
-summary(resclv\_senso,K=4)                           descript\_gp(resclv\_senso,X=senso,K=4)
-
-plot\_var(resclv\_senso,K=4)                         gpmb\_on\_pc(resclv\_senso,X=senso,K=4)
-
-get\_partition(resclv\_senso,K=4,type="vector")	     resclv\_senso[[4]]$clusters[2,]
-
-get\_comp(resclv\_senso,K=4)	                       resclv\_senso[[4]]$comp
-
-get\_loading(res.segext,K=3)	                       res.segext[[3]]$loading
-
-res.clvkm.rd<-CLV\_kmeans(X = pref, Xr = senso,      res.clvkm.rd<-CLV\_kmeans(X = pref, Xr = senso, 
-     method = "local", sX=TRUE, sXr = TRUE,                         method = 2, sX=TRUE, sXr = TRUE, 
-     clust=3, nstart=100)	                                           init=3, nstart=100)
---------------------------------------------         ----------------------------------------------
-
 #
 #
 #
@@ -215,3 +185,7 @@ Vigneau E., Chen M., Qannari E.M. (2015). ClustVarLV:  An R Package for the clus
 Vigneau E., Qannari E. M., Navez B., Cottet V. (2016). Segmentation of consumers in preference studies while setting aside atypical or irrelevant consumers. _Food Quality and Preference_, 47, 54-63.
 
 Vigneau E., Chen M. (2016). Dimensionality reduction by clustering of variables while setting aside atypical variables. _Electronic Journal of Applied Statistical Analysis_, 9(1), 134-153
+
+Vigneau E. (2018). Segmentation of a panel of consumers with missing data. _Food Quality and Preference_, 67, 10-17
+
+Vigneau E. (2021). Clustering of Variables for Enhanced Interpretability of Predictive Models. _Informatica_, 45, 507-516

@@ -35,7 +35,7 @@ function(resclv,K=NULL,axeh=1,axev=2,label=FALSE,cex.lab=1,v_colors=NULL,v_symbo
   if(is.null(resclv$param$K)) { 
     if (is.null(K)) {K<- as.numeric(readline("Please, give the number of groups : "))}
     clusters<-resclv[[K]]$clusters[2,]
-} else {
+ } else {
     clusters<-resclv$clusters[2,] 
     K<-resclv$param$K
  }
@@ -44,11 +44,14 @@ function(resclv,K=NULL,axeh=1,axev=2,label=FALSE,cex.lab=1,v_colors=NULL,v_symbo
   p <- dim(X)[2] 
   n <- dim(X)[1]
    
-  if (is.null(v_colors)) {v_colors <- c("blue","red","green","black",
-                                        "purple","orange","yellow","tomato","pink",
-                                        "gold","cyan","turquoise","violet","green",
-                                        "khaki","maroon","chocolate","burlywood")}
-  if(v_symbol) {v_colors<-rep("black",20)}
+  if (is.null(v_colors)) {
+                v_colors <- c("blue","red","green","black",
+                              "purple","orange","yellow","tomato","pink",
+                              "gold","cyan","turquoise","violet","darkolivegreen",
+                              "khaki","maroon","chocolate","burlywood")
+                v_colors <-rep(v_colors,length.out=K)
+  }
+  if(v_symbol) {v_colors<-rep("black",K)}
   
   
   # PCA of X
@@ -71,7 +74,7 @@ function(resclv,K=NULL,axeh=1,axev=2,label=FALSE,cex.lab=1,v_colors=NULL,v_symbo
          coordind[,a]=coordind[,a]*(-1)
       }
   }
-    
+                     
 par(pty="s")
 
 # ### PCA biplot
@@ -111,7 +114,6 @@ if (resclv$param$sX) {
   ymax=max(max(coordvar[,axev]),-min(coordvar[,axev]))
 }
 
-  
   clean_var<-NULL
   if(resclv$param$strategy=="kplusone")  clean_var<-which(clusters==0)
   if(resclv$param$strategy=="sparselv"){
@@ -123,7 +125,6 @@ if (resclv$param$sX) {
     clean_var = sort(match(names1,names2))
     names(clean_var) = colnames(X)[clean_var]
   }
-  
   
 
  
@@ -140,11 +141,13 @@ if (resclv$param$sX) {
     }
   }
   
+
+  
 if (beside==FALSE) {
   plot(coordvar[,c(axeh,axev)],col=colpart,pch=symbpart,cex.axis=0.7,cex.lab=0.7,
        xlab=paste("Dim ",axeh," (",round(valp[axeh],2),"%)"), 
        ylab=paste("Dim ",axev," (",round(valp[axev],2),"%)"), xlim=c(xmin,xmax), ylim=c(ymin,ymax))
-  arrows(rep(0,p), rep(0,p), coordvar[,axeh], coordvar[,axev], col= colpart, angle=0)
+  arrows(x0=rep(0,p), y0=rep(0,p), x1=coordvar[,axeh], y1=coordvar[,axev], col= colpart,length=0)
   if(label) {
     for (j in 1:p) {
       if(coordvar[j,axev]>0) text(coordvar[j,axeh], coordvar[j,axev],colnames(X)[j],pos=3,cex=cex.lab,col=colpart[j])
@@ -173,7 +176,7 @@ if (beside==TRUE) {
     plot(coordvar[who,c(axeh,axev)],col=colpart[who],pch=symbpart[who],cex.axis=0.7,cex.lab=0.7,
        xlab=paste("Dim ",axeh," (",round(valp[axeh],2),"%)"), 
        ylab=paste("Dim ",axev," (",round(valp[axev],2),"%)"), xlim=c(xmin,xmax), ylim=c(ymin,ymax))
-   arrows(rep(0,p), rep(0,p), coordvar[who,axeh], coordvar[who,axev], col= colpart[who], angle=0)
+   arrows(rep(0,p), rep(0,p), coordvar[who,axeh], coordvar[who,axev], col= colpart[who], length=0)
    if(label) {
     for (j in who) {
       if(coordvar[j,axev]>0) text(coordvar[j,axeh], coordvar[j,axev],colnames(X)[j],pos=3,cex=cex.lab,col=colpart[j])
@@ -194,7 +197,7 @@ if (beside==TRUE) {
     plot(coordvar[who,c(axeh,axev)],col=colpart[who],pch=symbpart[who],cex.axis=0.7,cex.lab=0.7,
        xlab=paste("Dim ",axeh," (",round(valp[axeh],2),"%)"), 
        ylab=paste("Dim ",axev," (",round(valp[axev],2),"%)"), xlim=c(xmin,xmax), ylim=c(ymin,ymax))
-    arrows(rep(0,p), rep(0,p), coordvar[who,axeh], coordvar[who,axev], col= colpart[who], angle=0)
+    arrows(rep(0,p), rep(0,p), coordvar[who,axeh], coordvar[who,axev], col= colpart[who], length=0)
     if(label) {
      for (j in who) {
        if(coordvar[j,axev]>0) text(coordvar[j,axeh], coordvar[j,axev],colnames(X)[j],pos=3,cex=cex.lab,col=colpart[j])

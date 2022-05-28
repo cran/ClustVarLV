@@ -21,7 +21,6 @@
 #' @keywords datasets
 #'
 #' @references Cariou, V., & Wilderjans, T. F. (2018). Consumer segmentation in multi-attribute product evaluation by means of non-negatively constrained CLV3W. Food Quality and Preference, 67, 18-26.
-#' (\href{https://doi.org/10.1016/j.foodqual.2017.01.006}{ScienceDirect})
 #'
 #' @examples
 #' data(coffee)

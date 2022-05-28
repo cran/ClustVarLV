@@ -1,442 +1,588 @@
 <!DOCTYPE html>
+
 <html>
+
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
-<title>Clustering around latent variables in the scope of Three-Way data</title>
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
-<script type="text/javascript">
-window.onload = function() {
-  var imgs = document.getElementsByTagName('img'), i, img;
-  for (i = 0; i < imgs.length; i++) {
-    img = imgs[i];
-    // center an image if it is the only element of its parent
-    if (img.parentElement.childElementCount === 1)
-      img.parentElement.style.textAlign = 'center';
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Veronique Cariou" />
+
+<meta name="date" content="2022-05-28" />
+
+<title>CLV3W: Clustering around latent variables with Three-Way data</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
   }
-};
+});
 </script>
 
-<!-- Styles for R syntax highlighter -->
 <style type="text/css">
-   pre .operator,
-   pre .paren {
-     color: rgb(104, 118, 135)
-   }
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
-   pre .literal {
-     color: #990073
-   }
 
-   pre .number {
-     color: #099;
-   }
 
-   pre .comment {
-     color: #998;
-     font-style: italic
-   }
-
-   pre .keyword {
-     color: #900;
-     font-weight: bold
-   }
-
-   pre .identifier {
-     color: rgb(0, 0, 0);
-   }
-
-   pre .string {
-     color: #d14;
-   }
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
 </style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 
-<!-- R syntax highlighter -->
-<script type="text/javascript">
-var hljs=new function(){function m(p){return p.replace(/&/gm,"&amp;").replace(/</gm,"&lt;")}function f(r,q,p){return RegExp(q,"m"+(r.cI?"i":"")+(p?"g":""))}function b(r){for(var p=0;p<r.childNodes.length;p++){var q=r.childNodes[p];if(q.nodeName=="CODE"){return q}if(!(q.nodeType==3&&q.nodeValue.match(/\s+/))){break}}}function h(t,s){var p="";for(var r=0;r<t.childNodes.length;r++){if(t.childNodes[r].nodeType==3){var q=t.childNodes[r].nodeValue;if(s){q=q.replace(/\n/g,"")}p+=q}else{if(t.childNodes[r].nodeName=="BR"){p+="\n"}else{p+=h(t.childNodes[r])}}}if(/MSIE [678]/.test(navigator.userAgent)){p=p.replace(/\r/g,"\n")}return p}function a(s){var r=s.className.split(/\s+/);r=r.concat(s.parentNode.className.split(/\s+/));for(var q=0;q<r.length;q++){var p=r[q].replace(/^language-/,"");if(e[p]){return p}}}function c(q){var p=[];(function(s,t){for(var r=0;r<s.childNodes.length;r++){if(s.childNodes[r].nodeType==3){t+=s.childNodes[r].nodeValue.length}else{if(s.childNodes[r].nodeName=="BR"){t+=1}else{if(s.childNodes[r].nodeType==1){p.push({event:"start",offset:t,node:s.childNodes[r]});t=arguments.callee(s.childNodes[r],t);p.push({event:"stop",offset:t,node:s.childNodes[r]})}}}}return t})(q,0);return p}function k(y,w,x){var q=0;var z="";var s=[];function u(){if(y.length&&w.length){if(y[0].offset!=w[0].offset){return(y[0].offset<w[0].offset)?y:w}else{return w[0].event=="start"?y:w}}else{return y.length?y:w}}function t(D){var A="<"+D.nodeName.toLowerCase();for(var B=0;B<D.attributes.length;B++){var C=D.attributes[B];A+=" "+C.nodeName.toLowerCase();if(C.value!==undefined&&C.value!==false&&C.value!==null){A+='="'+m(C.value)+'"'}}return A+">"}while(y.length||w.length){var v=u().splice(0,1)[0];z+=m(x.substr(q,v.offset-q));q=v.offset;if(v.event=="start"){z+=t(v.node);s.push(v.node)}else{if(v.event=="stop"){var p,r=s.length;do{r--;p=s[r];z+=("</"+p.nodeName.toLowerCase()+">")}while(p!=v.node);s.splice(r,1);while(r<s.length){z+=t(s[r]);r++}}}}return z+m(x.substr(q))}function j(){function q(x,y,v){if(x.compiled){return}var u;var s=[];if(x.k){x.lR=f(y,x.l||hljs.IR,true);for(var w in x.k){if(!x.k.hasOwnProperty(w)){continue}if(x.k[w] instanceof Object){u=x.k[w]}else{u=x.k;w="keyword"}for(var r in u){if(!u.hasOwnProperty(r)){continue}x.k[r]=[w,u[r]];s.push(r)}}}if(!v){if(x.bWK){x.b="\\b("+s.join("|")+")\\s"}x.bR=f(y,x.b?x.b:"\\B|\\b");if(!x.e&&!x.eW){x.e="\\B|\\b"}if(x.e){x.eR=f(y,x.e)}}if(x.i){x.iR=f(y,x.i)}if(x.r===undefined){x.r=1}if(!x.c){x.c=[]}x.compiled=true;for(var t=0;t<x.c.length;t++){if(x.c[t]=="self"){x.c[t]=x}q(x.c[t],y,false)}if(x.starts){q(x.starts,y,false)}}for(var p in e){if(!e.hasOwnProperty(p)){continue}q(e[p].dM,e[p],true)}}function d(B,C){if(!j.called){j();j.called=true}function q(r,M){for(var L=0;L<M.c.length;L++){if((M.c[L].bR.exec(r)||[null])[0]==r){return M.c[L]}}}function v(L,r){if(D[L].e&&D[L].eR.test(r)){return 1}if(D[L].eW){var M=v(L-1,r);return M?M+1:0}return 0}function w(r,L){return L.i&&L.iR.test(r)}function K(N,O){var M=[];for(var L=0;L<N.c.length;L++){M.push(N.c[L].b)}var r=D.length-1;do{if(D[r].e){M.push(D[r].e)}r--}while(D[r+1].eW);if(N.i){M.push(N.i)}return f(O,M.join("|"),true)}function p(M,L){var N=D[D.length-1];if(!N.t){N.t=K(N,E)}N.t.lastIndex=L;var r=N.t.exec(M);return r?[M.substr(L,r.index-L),r[0],false]:[M.substr(L),"",true]}function z(N,r){var L=E.cI?r[0].toLowerCase():r[0];var M=N.k[L];if(M&&M instanceof Array){return M}return false}function F(L,P){L=m(L);if(!P.k){return L}var r="";var O=0;P.lR.lastIndex=0;var M=P.lR.exec(L);while(M){r+=L.substr(O,M.index-O);var N=z(P,M);if(N){x+=N[1];r+='<span class="'+N[0]+'">'+M[0]+"</span>"}else{r+=M[0]}O=P.lR.lastIndex;M=P.lR.exec(L)}return r+L.substr(O,L.length-O)}function J(L,M){if(M.sL&&e[M.sL]){var r=d(M.sL,L);x+=r.keyword_count;return r.value}else{return F(L,M)}}function I(M,r){var L=M.cN?'<span class="'+M.cN+'">':"";if(M.rB){y+=L;M.buffer=""}else{if(M.eB){y+=m(r)+L;M.buffer=""}else{y+=L;M.buffer=r}}D.push(M);A+=M.r}function G(N,M,Q){var R=D[D.length-1];if(Q){y+=J(R.buffer+N,R);return false}var P=q(M,R);if(P){y+=J(R.buffer+N,R);I(P,M);return P.rB}var L=v(D.length-1,M);if(L){var O=R.cN?"</span>":"";if(R.rE){y+=J(R.buffer+N,R)+O}else{if(R.eE){y+=J(R.buffer+N,R)+O+m(M)}else{y+=J(R.buffer+N+M,R)+O}}while(L>1){O=D[D.length-2].cN?"</span>":"";y+=O;L--;D.length--}var r=D[D.length-1];D.length--;D[D.length-1].buffer="";if(r.starts){I(r.starts,"")}return R.rE}if(w(M,R)){throw"Illegal"}}var E=e[B];var D=[E.dM];var A=0;var x=0;var y="";try{var s,u=0;E.dM.buffer="";do{s=p(C,u);var t=G(s[0],s[1],s[2]);u+=s[0].length;if(!t){u+=s[1].length}}while(!s[2]);if(D.length>1){throw"Illegal"}return{r:A,keyword_count:x,value:y}}catch(H){if(H=="Illegal"){return{r:0,keyword_count:0,value:m(C)}}else{throw H}}}function g(t){var p={keyword_count:0,r:0,value:m(t)};var r=p;for(var q in e){if(!e.hasOwnProperty(q)){continue}var s=d(q,t);s.language=q;if(s.keyword_count+s.r>r.keyword_count+r.r){r=s}if(s.keyword_count+s.r>p.keyword_count+p.r){r=p;p=s}}if(r.language){p.second_best=r}return p}function i(r,q,p){if(q){r=r.replace(/^((<[^>]+>|\t)+)/gm,function(t,w,v,u){return w.replace(/\t/g,q)})}if(p){r=r.replace(/\n/g,"<br>")}return r}function n(t,w,r){var x=h(t,r);var v=a(t);var y,s;if(v){y=d(v,x)}else{return}var q=c(t);if(q.length){s=document.createElement("pre");s.innerHTML=y.value;y.value=k(q,c(s),x)}y.value=i(y.value,w,r);var u=t.className;if(!u.match("(\\s|^)(language-)?"+v+"(\\s|$)")){u=u?(u+" "+v):v}if(/MSIE [678]/.test(navigator.userAgent)&&t.tagName=="CODE"&&t.parentNode.tagName=="PRE"){s=t.parentNode;var p=document.createElement("div");p.innerHTML="<pre><code>"+y.value+"</code></pre>";t=p.firstChild.firstChild;p.firstChild.cN=s.cN;s.parentNode.replaceChild(p.firstChild,s)}else{t.innerHTML=y.value}t.className=u;t.result={language:v,kw:y.keyword_count,re:y.r};if(y.second_best){t.second_best={language:y.second_best.language,kw:y.second_best.keyword_count,re:y.second_best.r}}}function o(){if(o.called){return}o.called=true;var r=document.getElementsByTagName("pre");for(var p=0;p<r.length;p++){var q=b(r[p]);if(q){n(q,hljs.tabReplace)}}}function l(){if(window.addEventListener){window.addEventListener("DOMContentLoaded",o,false);window.addEventListener("load",o,false)}else{if(window.attachEvent){window.attachEvent("onload",o)}else{window.onload=o}}}var e={};this.LANGUAGES=e;this.highlight=d;this.highlightAuto=g;this.fixMarkup=i;this.highlightBlock=n;this.initHighlighting=o;this.initHighlightingOnLoad=l;this.IR="[a-zA-Z][a-zA-Z0-9_]*";this.UIR="[a-zA-Z_][a-zA-Z0-9_]*";this.NR="\\b\\d+(\\.\\d+)?";this.CNR="\\b(0[xX][a-fA-F0-9]+|(\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?)";this.BNR="\\b(0b[01]+)";this.RSR="!|!=|!==|%|%=|&|&&|&=|\\*|\\*=|\\+|\\+=|,|\\.|-|-=|/|/=|:|;|<|<<|<<=|<=|=|==|===|>|>=|>>|>>=|>>>|>>>=|\\?|\\[|\\{|\\(|\\^|\\^=|\\||\\|=|\\|\\||~";this.ER="(?![\\s\\S])";this.BE={b:"\\\\.",r:0};this.ASM={cN:"string",b:"'",e:"'",i:"\\n",c:[this.BE],r:0};this.QSM={cN:"string",b:'"',e:'"',i:"\\n",c:[this.BE],r:0};this.CLCM={cN:"comment",b:"//",e:"$"};this.CBLCLM={cN:"comment",b:"/\\*",e:"\\*/"};this.HCM={cN:"comment",b:"#",e:"$"};this.NM={cN:"number",b:this.NR,r:0};this.CNM={cN:"number",b:this.CNR,r:0};this.BNM={cN:"number",b:this.BNR,r:0};this.inherit=function(r,s){var p={};for(var q in r){p[q]=r[q]}if(s){for(var q in s){p[q]=s[q]}}return p}}();hljs.LANGUAGES.cpp=function(){var a={keyword:{"false":1,"int":1,"float":1,"while":1,"private":1,"char":1,"catch":1,"export":1,virtual:1,operator:2,sizeof:2,dynamic_cast:2,typedef:2,const_cast:2,"const":1,struct:1,"for":1,static_cast:2,union:1,namespace:1,unsigned:1,"long":1,"throw":1,"volatile":2,"static":1,"protected":1,bool:1,template:1,mutable:1,"if":1,"public":1,friend:2,"do":1,"return":1,"goto":1,auto:1,"void":2,"enum":1,"else":1,"break":1,"new":1,extern:1,using:1,"true":1,"class":1,asm:1,"case":1,typeid:1,"short":1,reinterpret_cast:2,"default":1,"double":1,register:1,explicit:1,signed:1,typename:1,"try":1,"this":1,"switch":1,"continue":1,wchar_t:1,inline:1,"delete":1,alignof:1,char16_t:1,char32_t:1,constexpr:1,decltype:1,noexcept:1,nullptr:1,static_assert:1,thread_local:1,restrict:1,_Bool:1,complex:1},built_in:{std:1,string:1,cin:1,cout:1,cerr:1,clog:1,stringstream:1,istringstream:1,ostringstream:1,auto_ptr:1,deque:1,list:1,queue:1,stack:1,vector:1,map:1,set:1,bitset:1,multiset:1,multimap:1,unordered_set:1,unordered_map:1,unordered_multiset:1,unordered_multimap:1,array:1,shared_ptr:1}};return{dM:{k:a,i:"</",c:[hljs.CLCM,hljs.CBLCLM,hljs.QSM,{cN:"string",b:"'\\\\?.",e:"'",i:"."},{cN:"number",b:"\\b(\\d+(\\.\\d*)?|\\.\\d+)(u|U|l|L|ul|UL|f|F)"},hljs.CNM,{cN:"preprocessor",b:"#",e:"$"},{cN:"stl_container",b:"\\b(deque|list|queue|stack|vector|map|set|bitset|multiset|multimap|unordered_map|unordered_set|unordered_multiset|unordered_multimap|array)\\s*<",e:">",k:a,r:10,c:["self"]}]}}}();hljs.LANGUAGES.r={dM:{c:[hljs.HCM,{cN:"number",b:"\\b0[xX][0-9a-fA-F]+[Li]?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+(?:[eE][+\\-]?\\d*)?L\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+\\.(?!\\d)(?:i\\b)?",e:hljs.IMMEDIATE_RE,r:1},{cN:"number",b:"\\b\\d+(?:\\.\\d*)?(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\.\\d+(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"keyword",b:"(?:tryCatch|library|setGeneric|setGroupGeneric)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\.",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\d+(?![\\w.])",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\b(?:function)",e:hljs.IMMEDIATE_RE,r:2},{cN:"keyword",b:"(?:if|in|break|next|repeat|else|for|return|switch|while|try|stop|warning|require|attach|detach|source|setMethod|setClass)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"literal",b:"(?:NA|NA_integer_|NA_real_|NA_character_|NA_complex_)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"literal",b:"(?:NULL|TRUE|FALSE|T|F|Inf|NaN)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"identifier",b:"[a-zA-Z.][a-zA-Z0-9._]*\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"<\\-(?!\\s*\\d)",e:hljs.IMMEDIATE_RE,r:2},{cN:"operator",b:"\\->|<\\-",e:hljs.IMMEDIATE_RE,r:1},{cN:"operator",b:"%%|~",e:hljs.IMMEDIATE_RE},{cN:"operator",b:">=|<=|==|!=|\\|\\||&&|=|\\+|\\-|\\*|/|\\^|>|<|!|&|\\||\\$|:",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"%",e:"%",i:"\\n",r:1},{cN:"identifier",b:"`",e:"`",r:0},{cN:"string",b:'"',e:'"',c:[hljs.BE],r:0},{cN:"string",b:"'",e:"'",c:[hljs.BE],r:0},{cN:"paren",b:"[[({\\])}]",e:hljs.IMMEDIATE_RE,r:0}]}};
-hljs.initHighlightingOnLoad();
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
 </script>
 
 
 
-<style type="text/css">
-body, td {
-   font-family: sans-serif;
-   background-color: white;
-   font-size: 13px;
-}
 
-body {
-  max-width: 800px;
-  margin: auto;
-  padding: 1em;
-  line-height: 20px;
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
 }
-
-tt, code, pre {
-   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
 }
-
-h1 {
-   font-size:2.2em;
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
 }
-
-h2 {
-   font-size:1.8em;
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
 }
-
-h3 {
-   font-size:1.4em;
+#TOC ul ul {
+margin-left: -2em;
 }
-
-h4 {
-   font-size:1.0em;
+#TOC li {
+line-height: 16px;
 }
-
-h5 {
-   font-size:0.9em;
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
 }
-
-h6 {
-   font-size:0.8em;
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
 }
-
-a:visited {
-   color: rgb(50%, 0%, 50%);
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
 }
-
-pre, img {
-  max-width: 100%;
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
 }
 pre {
-  overflow-x: auto;
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
 }
-pre code {
-   display: block; padding: 0.5em;
+pre:not([class]) {
+background-color: #f7f7f7;
 }
-
 code {
-  font-size: 92%;
-  border: 1px solid #ccc;
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
 }
-
-code[class] {
-  background-color: #F8F8F8;
+p > code, li > code {
+padding: 2px 0px;
 }
-
-table, td, th {
-  border: none;
+div.figure {
+text-align: center;
 }
-
-blockquote {
-   color:#666666;
-   margin:0;
-   padding-left: 1em;
-   border-left: 0.5em #EEE solid;
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
 }
-
-hr {
-   height: 0px;
-   border-bottom: none;
-   border-top-width: thin;
-   border-top-style: dotted;
-   border-top-color: #999999;
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
 }
-
-@media print {
-   * {
-      background: transparent !important;
-      color: black !important;
-      filter:none !important;
-      -ms-filter: none !important;
-   }
-
-   body {
-      font-size:12pt;
-      max-width:100%;
-   }
-
-   a, a:visited {
-      text-decoration: underline;
-   }
-
-   hr {
-      visibility: hidden;
-      page-break-before: always;
-   }
-
-   pre, blockquote {
-      padding-right: 1em;
-      page-break-inside: avoid;
-   }
-
-   tr, img {
-      page-break-inside: avoid;
-   }
-
-   img {
-      max-width: 100% !important;
-   }
-
-   @page :left {
-      margin: 15mm 20mm 15mm 10mm;
-   }
-
-   @page :right {
-      margin: 15mm 10mm 15mm 20mm;
-   }
-
-   p, h2, h3 {
-      orphans: 3; widows: 3;
-   }
-
-   h2, h3 {
-      page-break-after: avoid;
-   }
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
 }
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
 </style>
+
 
 
 
 </head>
 
 <body>
-<h1>Clustering around latent variables in the scope of Three-Way data</h1>
 
-<p>The functions associated with CLV3W are dedicated to the clustering around latent variables in the context of Three-Way data. Such data are structured as three-way arrays and the purpose is to cluster the second mode corresponding to the various variables (see Wilderjans and Cariou, 2016; Cariou and Wilderjans, 2018).</p>
 
-<pre><code class="r">library(ClustVarLV)
-#library(clv3w)
-</code></pre>
 
-<p>For illustration, we consider the &ldquo;coffee&rdquo; dataset which corresponds to consumer emotions associated with a variety of coffee aromas (Cariou and Wilderjans, 2018). </p>
 
-<pre><code class="r">data(coffee)
-# 12 coffee aromas rated by 84 consumers on 15 emotion terms
-</code></pre>
+<h1 class="title toc-ignore">CLV3W: Clustering around latent variables
+with Three-Way data</h1>
+<h4 class="author">Veronique Cariou</h4>
+<h4 class="date">2022-05-28</h4>
 
+
+
+<div id="clustering-around-latent-variables-in-the-scope-of-three-way-data" class="section level1">
+<h1>Clustering around latent variables in the scope of Three-Way
+data</h1>
+<p>The functions associated with CLV3W are dedicated to the clustering
+around latent variables in the context of Three-Way data. Such data are
+structured as three-way arrays and the purpose is to cluster the second
+mode corresponding to the various variables (see Wilderjans and Cariou,
+2016; Cariou and Wilderjans, 2018).</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ClustVarLV)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#library(clv3w)</span></span></code></pre></div>
+<p>For illustration, we consider the “coffee” dataset which corresponds
+to consumer emotions associated with a variety of coffee aromas (Cariou
+and Wilderjans, 2018).</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(coffee)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># 12 coffee aromas rated by 84 consumers on 15 emotion terms</span></span></code></pre></div>
+<div id="clustering-of-the-consumers" class="section level2">
 <h2>Clustering of the consumers</h2>
-
-<p>The aim is to find groups of consumers. Herein &ldquo;directional&rdquo; groups are sought.
-Each group is associated with a latent component which makes it possible to identify the underlying sensory dimensions.</p>
-
-<pre><code class="r">resclv3w_coffee&lt;-CLV3W(coffee,mode.scale=2,NN=TRUE,moddendoinertie=TRUE,graph=TRUE,gmax=11,cp.rand=1)
-# option NN=TRUE means that consumers within a group must be positively correlated with its latent component, otherwise its loading is set to 0 
-
-# Print of the &#39;clv3W&#39; object 
-print(resclv3w_coffee)
-</code></pre>
-
-<pre><code class="r"># Dendrogram of the CLV3W hierarchical clustering algorithm :
-plot(resclv3w_coffee,&quot;dendrogram&quot;)
-</code></pre>
-
-<p><img src="data:image/png;base64,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" alt="plot of chunk unnamed-chunk-4"/></p>
-
-<pre><code class="r"># Graph of the variation of the associated clustering criterion
-plot(resclv3w_coffee,&quot;delta&quot;)
-</code></pre>
-
-<p>The graph of the variation of the clustering criterion between a partition into K clusters and a partition into (K-1) clusters (after consolidation) is useful for determining the number of clusters to be retained.
-Because the criterion clearly jumps when passing from 3 to 2 groups,  a partition into 2 groups is retained.</p>
-
-<pre><code class="r"># Summary the CLV3W results for a partition into 2 groups
-summary(resclv3w_coffee,K=2)
-#&gt; $size
-#&gt; clusters
-#&gt;  1  2 
-#&gt; 45 39 
-#&gt; 
-#&gt; $prop_explained_per_cluster
-#&gt; [1] 20.860 24.945
-#&gt; 
-#&gt; $prop_explained_total
-#&gt; [1] 22.756
-#&gt; 
-#&gt; $comp
-#&gt;                 Comp1  Comp2
-#&gt; Vanilla        -0.320 -0.091
-#&gt; B.Rice         -0.062  0.223
-#&gt; Lemon           0.527 -0.428
-#&gt; Coffee.Flower   0.440 -0.251
-#&gt; Cedar          -0.082  0.391
-#&gt; Hazelnut       -0.113 -0.248
-#&gt; Coriander.Seed  0.157 -0.006
-#&gt; Honey          -0.354 -0.129
-#&gt; Medicine       -0.252  0.425
-#&gt; Apricot         0.361 -0.284
-#&gt; Earth          -0.232  0.448
-#&gt; Hay            -0.069 -0.050
-#&gt; 
-#&gt; $weight
-#&gt;               Comp1  Comp2
-#&gt; Calm          0.208 -0.185
-#&gt; Nostalgic     0.190 -0.221
-#&gt; Angry        -0.217  0.222
-#&gt; Disgusted    -0.375  0.372
-#&gt; Unique        0.096 -0.122
-#&gt; Excited       0.142 -0.207
-#&gt; Unpleasant   -0.335  0.331
-#&gt; Disappointed -0.239  0.269
-#&gt; Free          0.227 -0.192
-#&gt; Surprised     0.002  0.015
-#&gt; Irritated    -0.335  0.307
-#&gt; Energetic     0.221 -0.263
-#&gt; Happy         0.318 -0.320
-#&gt; Well          0.377 -0.338
-#&gt; Amused        0.280 -0.269
-#&gt; 
-#&gt; $groups
-#&gt; $groups$`Cluster 1`
-#&gt;    loading cor in.group cor next.group
-#&gt; 1    0.217        0.841          0.471
-#&gt; 2    0.078        0.619          0.318
-#&gt; 3    0.145        0.586          0.126
-#&gt; 4    0.032        0.210          0.184
-#&gt; 6    0.127        0.607          0.416
-#&gt; 8    0.078        0.361          0.166
-#&gt; 9    0.069        0.523         -0.076
-#&gt; 12   0.126        0.654          0.204
-#&gt; 14   0.152        0.698          0.323
-#&gt; 15   0.082        0.340          0.167
-#&gt; 16   0.137        0.631          0.617
-#&gt; 18   0.234        0.820          0.477
-#&gt; 19   0.088        0.370         -0.060
-#&gt; 20   0.122        0.522          0.404
-#&gt; 22   0.142        0.643          0.366
-#&gt; 24   0.209        0.815          0.704
-#&gt; 25   0.167        0.733          0.163
-#&gt; 26   0.222        0.795          0.269
-#&gt; 30   0.211        0.909          0.484
-#&gt; 33   0.193        0.790          0.675
-#&gt; 34   0.159        0.727          0.330
-#&gt; 36   0.156        0.673          0.489
-#&gt; 38   0.169        0.762          0.383
-#&gt; 40   0.109        0.599          0.283
-#&gt; 43   0.053        0.212          0.089
-#&gt; 47   0.073        0.409          0.267
-#&gt; 48   0.124        0.552          0.167
-#&gt; 49   0.083        0.394         -0.108
-#&gt; 54   0.136        0.689          0.340
-#&gt; 56   0.214        0.833          0.786
-#&gt; 58   0.151        0.580          0.451
-#&gt; 59   0.225        0.872          0.548
-#&gt; 61   0.130        0.717          0.539
-#&gt; 62   0.154        0.688          0.425
-#&gt; 63   0.161        0.650          0.137
-#&gt; 65   0.130        0.551          0.530
-#&gt; 66   0.127        0.488          0.252
-#&gt; 67   0.159        0.720          0.375
-#&gt; 71   0.116        0.618          0.602
-#&gt; 73   0.136        0.605          0.089
-#&gt; 74   0.110        0.661          0.489
-#&gt; 79   0.226        0.855          0.657
-#&gt; 80   0.149        0.665          0.552
-#&gt; 82   0.178        0.747          0.632
-#&gt; 84   0.000       -0.611         -0.279
-#&gt; 
-#&gt; $groups$`Cluster 2`
-#&gt;    loading cor in.group cor next.group
-#&gt; 5    0.129        0.551         -0.028
-#&gt; 7    0.139        0.603          0.145
-#&gt; 10   0.147        0.553          0.276
-#&gt; 11   0.000       -0.070         -0.464
-#&gt; 13   0.160        0.844          0.523
-#&gt; 17   0.158        0.621          0.606
-#&gt; 21   0.116        0.651          0.118
-#&gt; 23   0.059        0.242         -0.069
-#&gt; 27   0.123        0.646          0.535
-#&gt; 28   0.196        0.839          0.445
-#&gt; 29   0.136        0.592          0.439
-#&gt; 31   0.147        0.676          0.270
-#&gt; 32   0.137        0.561          0.263
-#&gt; 35   0.224        0.896          0.639
-#&gt; 37   0.113        0.523          0.387
-#&gt; 39   0.137        0.598          0.371
-#&gt; 41   0.152        0.657          0.530
-#&gt; 42   0.062        0.241          0.013
-#&gt; 44   0.185        0.681          0.513
-#&gt; 45   0.124        0.628          0.245
-#&gt; 46   0.204        0.885          0.485
-#&gt; 50   0.120        0.520          0.051
-#&gt; 51   0.166        0.836          0.688
-#&gt; 52   0.251        0.938          0.429
-#&gt; 53   0.231        0.921          0.521
-#&gt; 55   0.133        0.525          0.238
-#&gt; 57   0.173        0.790          0.345
-#&gt; 60   0.155        0.701          0.551
-#&gt; 64   0.181        0.804          0.412
-#&gt; 68   0.145        0.749          0.552
-#&gt; 69   0.164        0.754          0.452
-#&gt; 70   0.184        0.719          0.567
-#&gt; 72   0.199        0.872          0.441
-#&gt; 75   0.165        0.767          0.239
-#&gt; 76   0.204        0.862          0.618
-#&gt; 77   0.192        0.778          0.724
-#&gt; 78   0.112        0.546          0.501
-#&gt; 81   0.208        0.806          0.304
-#&gt; 83   0.133        0.671          0.485
-#&gt; 
-#&gt; 
-#&gt; $cormatrix
-#&gt;        Comp.1 Comp.2
-#&gt; Comp.1  1.000 -0.591
-#&gt; Comp.2 -0.591  1.000
-</code></pre>
-
-<p>The function plot_var.clv3w() allows us to describe the groups of variables into a two dimensional space obtained by Candecomp Parafac. 
-Several options are available for the choice of the axes, for adding labels, producing a plot without colours but symbols, having only one plot or a plot by groups of variables. When mode3 is set to TRUE, an additional plot is displayed corresponding to the coordinates of the mode1 elements on the global scores of Parafac together with a projection of the mode 3 elements on it.</p>
-
-<pre><code class="r"># Representation of the group membership for a partition into 4 groups
-plot_var.clv3w(resclv3w_coffee,K=2,labels=TRUE,cex.lab=0.8,beside=TRUE,mode3=FALSE)
-</code></pre>
-
+<p>The aim is to find groups of consumers. Herein “directional” groups
+are sought. Each group is associated with a latent component which makes
+it possible to identify the underlying sensory dimensions.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>resclv3w_coffee<span class="ot">&lt;-</span><span class="fu">CLV3W</span>(coffee,<span class="at">mode.scale=</span><span class="dv">2</span>,<span class="at">NN=</span><span class="cn">TRUE</span>,<span class="at">moddendoinertie=</span><span class="cn">TRUE</span>,<span class="at">graph=</span><span class="cn">TRUE</span>,<span class="at">gmax=</span><span class="dv">11</span>,<span class="at">cp.rand=</span><span class="dv">1</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># option NN=TRUE means that consumers within a group must be positively correlated with its latent component, otherwise its loading is set to 0 </span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Print of the &#39;clv3W&#39; object </span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(resclv3w_coffee)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Dendrogram of the CLV3W hierarchical clustering algorithm :</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(resclv3w_coffee,<span class="st">&quot;dendrogram&quot;</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Graph of the variation of the associated clustering criterion</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(resclv3w_coffee,<span class="st">&quot;delta&quot;</span>)</span></code></pre></div>
+<p>The graph of the variation of the clustering criterion between a
+partition into K clusters and a partition into (K-1) clusters (after
+consolidation) is useful for determining the number of clusters to be
+retained. Because the criterion clearly jumps when passing from 3 to 2
+groups, a partition into 2 groups is retained.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summary the CLV3W results for a partition into 2 groups</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(resclv3w_coffee,<span class="at">K=</span><span class="dv">2</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $size</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; clusters</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1  2 </span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 46 38 </span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $prop_explained_per_cluster</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 20.406 25.601</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $prop_explained_total</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 22.756</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $comp</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                 Comp1  Comp2</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Vanilla         0.320 -0.091</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; B.Rice          0.062  0.223</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Lemon          -0.527 -0.428</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Coffee.Flower  -0.440 -0.251</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Cedar           0.082  0.391</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Hazelnut        0.113 -0.248</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Coriander.Seed -0.157 -0.006</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Honey           0.354 -0.129</span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Medicine        0.252  0.425</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Apricot        -0.361 -0.284</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Earth           0.232  0.448</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Hay             0.069 -0.050</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $weight</span></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;               Comp1  Comp2</span></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Calm         -0.208 -0.185</span></span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Nostalgic    -0.190 -0.221</span></span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Angry         0.217  0.222</span></span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Disgusted     0.375  0.372</span></span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Unique       -0.096 -0.122</span></span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Excited      -0.142 -0.207</span></span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Unpleasant    0.335  0.331</span></span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Disappointed  0.239  0.269</span></span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Free         -0.227 -0.192</span></span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Surprised    -0.002  0.015</span></span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Irritated     0.335  0.307</span></span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Energetic    -0.221 -0.263</span></span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Happy        -0.318 -0.320</span></span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Well         -0.377 -0.338</span></span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Amused       -0.280 -0.269</span></span>
+<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $groups</span></span>
+<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $groups$`Cluster 1`</span></span>
+<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    loading cor in.group cor next.group</span></span>
+<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1    0.217        0.841          0.471</span></span>
+<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2    0.078        0.619          0.318</span></span>
+<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3    0.145        0.586          0.126</span></span>
+<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4    0.032        0.210          0.184</span></span>
+<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6    0.127        0.607          0.416</span></span>
+<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 8    0.078        0.361          0.166</span></span>
+<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 9    0.069        0.523         -0.076</span></span>
+<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 11   0.000       -0.464         -0.070</span></span>
+<span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 12   0.126        0.654          0.204</span></span>
+<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 14   0.151        0.698          0.323</span></span>
+<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 15   0.082        0.340          0.167</span></span>
+<span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 16   0.137        0.631          0.617</span></span>
+<span id="cb6-62"><a href="#cb6-62" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 18   0.234        0.820          0.477</span></span>
+<span id="cb6-63"><a href="#cb6-63" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 19   0.088        0.370         -0.060</span></span>
+<span id="cb6-64"><a href="#cb6-64" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 20   0.122        0.522          0.404</span></span>
+<span id="cb6-65"><a href="#cb6-65" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 22   0.142        0.643          0.366</span></span>
+<span id="cb6-66"><a href="#cb6-66" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 24   0.209        0.815          0.704</span></span>
+<span id="cb6-67"><a href="#cb6-67" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 25   0.167        0.733          0.163</span></span>
+<span id="cb6-68"><a href="#cb6-68" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 26   0.222        0.795          0.269</span></span>
+<span id="cb6-69"><a href="#cb6-69" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 30   0.211        0.909          0.484</span></span>
+<span id="cb6-70"><a href="#cb6-70" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 33   0.193        0.790          0.675</span></span>
+<span id="cb6-71"><a href="#cb6-71" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 34   0.159        0.727          0.330</span></span>
+<span id="cb6-72"><a href="#cb6-72" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 36   0.156        0.673          0.489</span></span>
+<span id="cb6-73"><a href="#cb6-73" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 38   0.169        0.762          0.383</span></span>
+<span id="cb6-74"><a href="#cb6-74" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 40   0.109        0.599          0.283</span></span>
+<span id="cb6-75"><a href="#cb6-75" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 43   0.053        0.212          0.089</span></span>
+<span id="cb6-76"><a href="#cb6-76" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 47   0.073        0.409          0.267</span></span>
+<span id="cb6-77"><a href="#cb6-77" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 48   0.124        0.552          0.167</span></span>
+<span id="cb6-78"><a href="#cb6-78" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 49   0.083        0.394         -0.108</span></span>
+<span id="cb6-79"><a href="#cb6-79" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 54   0.136        0.689          0.340</span></span>
+<span id="cb6-80"><a href="#cb6-80" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 56   0.214        0.833          0.786</span></span>
+<span id="cb6-81"><a href="#cb6-81" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 58   0.151        0.580          0.451</span></span>
+<span id="cb6-82"><a href="#cb6-82" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 59   0.225        0.872          0.548</span></span>
+<span id="cb6-83"><a href="#cb6-83" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 61   0.130        0.717          0.539</span></span>
+<span id="cb6-84"><a href="#cb6-84" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 62   0.154        0.688          0.425</span></span>
+<span id="cb6-85"><a href="#cb6-85" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 63   0.161        0.650          0.137</span></span>
+<span id="cb6-86"><a href="#cb6-86" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 65   0.130        0.551          0.530</span></span>
+<span id="cb6-87"><a href="#cb6-87" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 66   0.127        0.488          0.252</span></span>
+<span id="cb6-88"><a href="#cb6-88" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 67   0.159        0.720          0.375</span></span>
+<span id="cb6-89"><a href="#cb6-89" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 71   0.116        0.618          0.602</span></span>
+<span id="cb6-90"><a href="#cb6-90" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 73   0.136        0.605          0.089</span></span>
+<span id="cb6-91"><a href="#cb6-91" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 74   0.110        0.661          0.489</span></span>
+<span id="cb6-92"><a href="#cb6-92" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 79   0.226        0.855          0.657</span></span>
+<span id="cb6-93"><a href="#cb6-93" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 80   0.149        0.665          0.552</span></span>
+<span id="cb6-94"><a href="#cb6-94" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 82   0.178        0.747          0.632</span></span>
+<span id="cb6-95"><a href="#cb6-95" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 84   0.000       -0.611         -0.279</span></span>
+<span id="cb6-96"><a href="#cb6-96" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-97"><a href="#cb6-97" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $groups$`Cluster 2`</span></span>
+<span id="cb6-98"><a href="#cb6-98" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    loading cor in.group cor next.group</span></span>
+<span id="cb6-99"><a href="#cb6-99" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5    0.129        0.551         -0.028</span></span>
+<span id="cb6-100"><a href="#cb6-100" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 7    0.139        0.603          0.145</span></span>
+<span id="cb6-101"><a href="#cb6-101" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10   0.147        0.553          0.276</span></span>
+<span id="cb6-102"><a href="#cb6-102" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 13   0.160        0.844          0.523</span></span>
+<span id="cb6-103"><a href="#cb6-103" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 17   0.158        0.621          0.606</span></span>
+<span id="cb6-104"><a href="#cb6-104" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 21   0.116        0.651          0.118</span></span>
+<span id="cb6-105"><a href="#cb6-105" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 23   0.059        0.242         -0.069</span></span>
+<span id="cb6-106"><a href="#cb6-106" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 27   0.123        0.646          0.535</span></span>
+<span id="cb6-107"><a href="#cb6-107" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 28   0.196        0.839          0.445</span></span>
+<span id="cb6-108"><a href="#cb6-108" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 29   0.136        0.592          0.439</span></span>
+<span id="cb6-109"><a href="#cb6-109" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 31   0.147        0.676          0.270</span></span>
+<span id="cb6-110"><a href="#cb6-110" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 32   0.137        0.562          0.263</span></span>
+<span id="cb6-111"><a href="#cb6-111" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 35   0.224        0.896          0.639</span></span>
+<span id="cb6-112"><a href="#cb6-112" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 37   0.113        0.523          0.387</span></span>
+<span id="cb6-113"><a href="#cb6-113" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 39   0.137        0.598          0.371</span></span>
+<span id="cb6-114"><a href="#cb6-114" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 41   0.152        0.657          0.530</span></span>
+<span id="cb6-115"><a href="#cb6-115" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 42   0.062        0.241          0.013</span></span>
+<span id="cb6-116"><a href="#cb6-116" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 44   0.185        0.681          0.513</span></span>
+<span id="cb6-117"><a href="#cb6-117" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 45   0.124        0.628          0.245</span></span>
+<span id="cb6-118"><a href="#cb6-118" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 46   0.204        0.885          0.485</span></span>
+<span id="cb6-119"><a href="#cb6-119" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 50   0.120        0.520          0.051</span></span>
+<span id="cb6-120"><a href="#cb6-120" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 51   0.166        0.836          0.688</span></span>
+<span id="cb6-121"><a href="#cb6-121" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 52   0.251        0.938          0.429</span></span>
+<span id="cb6-122"><a href="#cb6-122" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 53   0.231        0.921          0.521</span></span>
+<span id="cb6-123"><a href="#cb6-123" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 55   0.133        0.525          0.238</span></span>
+<span id="cb6-124"><a href="#cb6-124" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 57   0.173        0.790          0.345</span></span>
+<span id="cb6-125"><a href="#cb6-125" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 60   0.155        0.701          0.551</span></span>
+<span id="cb6-126"><a href="#cb6-126" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 64   0.181        0.804          0.412</span></span>
+<span id="cb6-127"><a href="#cb6-127" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 68   0.145        0.749          0.552</span></span>
+<span id="cb6-128"><a href="#cb6-128" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 69   0.164        0.754          0.452</span></span>
+<span id="cb6-129"><a href="#cb6-129" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 70   0.184        0.719          0.567</span></span>
+<span id="cb6-130"><a href="#cb6-130" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 72   0.199        0.872          0.441</span></span>
+<span id="cb6-131"><a href="#cb6-131" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 75   0.165        0.767          0.239</span></span>
+<span id="cb6-132"><a href="#cb6-132" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 76   0.204        0.862          0.618</span></span>
+<span id="cb6-133"><a href="#cb6-133" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 77   0.192        0.778          0.724</span></span>
+<span id="cb6-134"><a href="#cb6-134" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 78   0.112        0.546          0.501</span></span>
+<span id="cb6-135"><a href="#cb6-135" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 81   0.208        0.806          0.304</span></span>
+<span id="cb6-136"><a href="#cb6-136" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 83   0.133        0.671          0.485</span></span>
+<span id="cb6-137"><a href="#cb6-137" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-138"><a href="#cb6-138" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-139"><a href="#cb6-139" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $cormatrix</span></span>
+<span id="cb6-140"><a href="#cb6-140" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        Comp.1 Comp.2</span></span>
+<span id="cb6-141"><a href="#cb6-141" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Comp.1  1.000  0.591</span></span>
+<span id="cb6-142"><a href="#cb6-142" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Comp.2  0.591  1.000</span></span></code></pre></div>
+<p>The function plot_var.clv3w() allows us to describe the groups of
+variables into a two dimensional space obtained by Candecomp Parafac.
+Several options are available for the choice of the axes, for adding
+labels, producing a plot without colours but symbols, having only one
+plot or a plot by groups of variables. When mode3 is set to TRUE, an
+additional plot is displayed corresponding to the coordinates of the
+mode1 elements on the global scores of Parafac together with a
+projection of the mode 3 elements on it.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Representation of the group membership for a partition into 4 groups</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_var.clv3w</span>(resclv3w_coffee,<span class="at">K=</span><span class="dv">2</span>,<span class="at">labels=</span><span class="cn">TRUE</span>,<span class="at">cex.lab=</span><span class="fl">0.8</span>,<span class="at">beside=</span><span class="cn">TRUE</span>,<span class="at">mode3=</span><span class="cn">FALSE</span>)</span></code></pre></div>
 <p>or</p>
-
-<pre><code class="r">plot_var.clv3w(resclv3w_coffee,K=2,labels=TRUE,cex.lab=0.8,beside=FALSE,mode3=TRUE)
-</code></pre>
-
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_var.clv3w</span>(resclv3w_coffee,<span class="at">K=</span><span class="dv">2</span>,<span class="at">labels=</span><span class="cn">TRUE</span>,<span class="at">cex.lab=</span><span class="fl">0.8</span>,<span class="at">beside=</span><span class="cn">FALSE</span>,<span class="at">mode3=</span><span class="cn">TRUE</span>)</span></code></pre></div>
 <p>Additional functions :</p>
-
-<pre><code class="r"># Extract the group membership of each variable
-get_partition(resclv3w_coffee,2)
-
-# Extract the group latent variables 
-get_comp(resclv3w_coffee,2)
-
-# Extract the vector of loadings of the variables 
-get_loading(resclv3w_coffee,2)
-
-# Extract the vector of weights associated with mode3
-get_weight(resclv3w_coffee,2)
-</code></pre>
-
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract the group membership of each variable</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">get_partition</span>(resclv3w_coffee,<span class="dv">2</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract the group latent variables </span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="fu">get_comp</span>(resclv3w_coffee,<span class="dv">2</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract the vector of loadings of the variables </span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="fu">get_loading</span>(resclv3w_coffee,<span class="dv">2</span>)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract the vector of weights associated with mode3</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="fu">get_weight</span>(resclv3w_coffee,<span class="dv">2</span>)</span></code></pre></div>
+</div>
+<div id="using-the-clv3w_kmeans-function" class="section level2">
 <h2>Using the CLV3W_kmeans function</h2>
-
-<p>This procedure is less time consuming with a large number of variables (mode2).
-The number of clusters needs to be fixed (e.g.2). </p>
-
-<p>The initialization of the algorithm  can be made at random, &ldquo;init&rdquo; times, while
-the number of starts associated with Candecomp Parafac is set up with cp.rand :</p>
-
-<pre><code class="r">res.clv3wkm.rd&lt;-CLV3W_kmeans(coffee,2,mode.scale=2,NN=TRUE,init=20,cp.rand=2)
-</code></pre>
-
-<p>It is possible to compare the partitions according to the procedure used :</p>
-
-<pre><code class="r">table(get_partition(resclv3w_coffee,K=2),get_partition(res.clv3wkm.rd,K=2)) 
-#&gt;    
-#&gt;      1  2
-#&gt;   1  5 40
-#&gt;   2 38  1
-</code></pre>
-
+<p>This procedure is less time consuming with a large number of
+variables (mode2). The number of clusters needs to be fixed (e.g.2).</p>
+<p>The initialization of the algorithm can be made at random, “init”
+times, while the number of starts associated with Candecomp Parafac is
+set up with cp.rand :</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>res.clv3wkm.rd<span class="ot">&lt;-</span><span class="fu">CLV3W_kmeans</span>(coffee,<span class="dv">2</span>,<span class="at">mode.scale=</span><span class="dv">2</span>,<span class="at">NN=</span><span class="cn">TRUE</span>,<span class="at">init=</span><span class="dv">20</span>,<span class="at">cp.rand=</span><span class="dv">2</span>)</span></code></pre></div>
+<p>It is possible to compare the partitions according to the procedure
+used :</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(<span class="fu">get_partition</span>(resclv3w_coffee,<span class="at">K=</span><span class="dv">2</span>),<span class="fu">get_partition</span>(res.clv3wkm.rd,<span class="at">K=</span><span class="dv">2</span>)) </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    </span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      1  2</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   1 41  5</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   2  0 38</span></span></code></pre></div>
+</div>
+<div id="references" class="section level2">
 <h2>References</h2>
+<p>Cariou, V., &amp; Wilderjans, T. F. (2018). Consumer segmentation in
+multi-attribute product evaluation by means of non-negatively
+constrained CLV3W. <em>Food Quality and Preference</em>, 67, 18-26.</p>
+<p>Wilderjans, T. F., &amp; Cariou, V. (2016). CLV3W: A clustering
+around latent variables approach to detect panel disagreement in
+three-way conventional sensory profiling data. <em>Food Quality and
+Preference</em>, 47, 45-53.</p>
+</div>
+</div>
 
-<p>Cariou, V., &amp; Wilderjans, T. F. (2018). Consumer segmentation in multi-attribute product evaluation by means of non-negatively constrained CLV3W. <em>Food Quality and Preference</em>, 67, 18-26.</p>
 
-<p>Wilderjans, T. F., &amp; Cariou, V. (2016). CLV3W: A clustering around latent variables approach to detect panel disagreement in three-way conventional sensory profiling data. <em>Food Quality and Preference</em>, 47, 45-53.</p>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
 
 </body>
-
 </html>

@@ -4,7 +4,9 @@
 \name{AUPA_psycho}
 \alias{AUPA_psycho}
 \title{Psychological eating behavior data set}
-\format{A data frame with 559 observations, (row names from 1 to 559) and 31 items. The name of the items refers to the corresponding block (E, X, R, P, S).}
+\format{
+A data frame with 559 observations, (row names from 1 to 559) and 31 items. The name of the items refers to the corresponding block (E, X, R, P, S).
+}
 \usage{
 data(AUPA_psycho)
 }

@@ -13,7 +13,7 @@
 #' \item{Panel}{Judge.1 to Judge.7 }
 #' }
 #' @references Ledauphin, S., Hanafi, M., & Qannari, E. M. (2006). Assessment of the agreement among the subjects in fixed vocabulary profiling. Food quality and preference, 17(3-4), 277-280.
-#' (\href{https://doi.org/10.1016/j.foodqual.2005.03.017}{ScienceDirect})
+#'
 #' @keywords datasets
 #'
 #'

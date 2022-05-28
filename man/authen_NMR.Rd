@@ -4,11 +4,13 @@
 \name{authen_NMR}
 \alias{authen_NMR}
 \title{Authentication data set/ NMR spectra}
-\format{150 observations and 2 blocks of variables.
+\format{
+150 observations and 2 blocks of variables.
 \describe{
     \item{authen_NMR$Xz1}{spectral range from  6 to 9 ppm (300 variables)}
     \item{authen_NMR$Xz2}{spectral range from  0.5 to 2.3 ppm (180 variables)}
-}}
+}
+}
 \usage{
 data(authen_NMR)
 }

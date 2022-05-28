@@ -33,7 +33,7 @@ import(foreach)
 import(iterators)
 
 importFrom(Rcpp, evalCpp)
-importFrom("graphics", "abline", "arrows", "barplot", "boxplot","legend", "par","plot", "symbols", "text","title", "points")
+importFrom("graphics", "abline", "arrows", "barplot", "boxplot","legend", "par","plot", "symbols", "text","title", "points","matplot")
 importFrom("stats", "as.dendrogram", "cor", "cov", "runif", "sd","var","wilcox.test","dnorm")
 importFrom("grDevices","dev.new", "rainbow")
 importFrom("plyr","aaply")

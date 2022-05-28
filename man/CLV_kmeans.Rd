@@ -4,9 +4,20 @@
 \alias{CLV_kmeans}
 \title{K-means algorithm for the clustering of variables}
 \usage{
-CLV_kmeans(X, Xu = NULL, Xr = NULL, method, sX = TRUE, sXr = FALSE,
-  sXu = FALSE, clust, iter.max = 20, nstart = 100,
-  strategy = "none", rho = 0.3)
+CLV_kmeans(
+  X,
+  Xu = NULL,
+  Xr = NULL,
+  method,
+  sX = TRUE,
+  sXr = FALSE,
+  sXu = FALSE,
+  clust,
+  iter.max = 20,
+  nstart = 100,
+  strategy = "none",
+  rho = 0.3
+)
 }
 \arguments{
 \item{X}{The matrix of the variables to be clustered}

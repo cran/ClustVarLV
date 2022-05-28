@@ -4,8 +4,7 @@
 \alias{get_loading}
 \title{Loadings of the variables on the latent component, in each cluster.}
 \usage{
-get_loading(resclv, K = NULL, type = "list", graph = FALSE,
-  cex.lab = 1)
+get_loading(resclv, K = NULL, type = "list", graph = FALSE, cex.lab = 1)
 }
 \arguments{
 \item{resclv}{: result of CLV(), CLV_kmeans(), LCLV(), CLV3W() or CLV3W_kmeans()}

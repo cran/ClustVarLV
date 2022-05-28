@@ -55,12 +55,17 @@ CLV_kmeans <- function(X,Xu=NULL,Xr=NULL,method,sX=TRUE,sXr=FALSE,sXu=FALSE,
   if (method=="directional") method=1
   if (method=="local") method=2
   if(method!=1 & method!=2) stop("method should be 1/directional or 2/local")
-
+  
   if (missing(clust))
     stop("'clust' must be an integer (the number of clusters) or a vector of vector a vector of intergers (the initial partition)")
   cX=TRUE
   cXr=TRUE
   cXu=FALSE
+  
+  
+  # if colnames(X) is null, colnames(x) is created
+  if (is.null(colnames(X))) colnames(X)=paste("V.",1:ncol(X),sep="")
+  
   
   # verification if some variables have constant values (standard deviation=0)
   who<-which(apply(X,2,sd)==0)

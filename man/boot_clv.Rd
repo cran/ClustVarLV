@@ -4,23 +4,33 @@
 \alias{boot_clv}
 \title{Boostrapping for assessing the stability of a CLV result}
 \usage{
-boot_clv(object, B = 100, nmax = NULL)
+boot_clv(object, case = "row", B = 100, nmax = NULL)
 }
 \arguments{
 \item{object}{: result of CLV()}
+
+\item{case}{: "row" or "column" corresponding to the random effect of the design}
 
 \item{B}{: the number of bootstrap to be run (100 by default)}
 
 \item{nmax}{: maximal size of the partitions to be considered (if NULL, the value of nmax used for the object is used)}
 }
 \value{
-\item{matARI}{a matrix of the Adjusted Rand Index of size (B x nmax).}
+\item{res}{a list of length 4 for the Rand Index, Adjusted Rand Index, Cohesion and Isolation of the partition \cr
+                  results (matrix of size (B x nmax), respectively.}
 }
 \description{
-Bootstrapping on the samples is performed. 
+Bootstrapping on the individuals (in row) or the variables (in column) is performed. 
+Choose the "row" option (the default), if the variables are measured on a random sample of individuals,
+Choose the "column" option, if the variables are taken from a population of variables.
+The first case is the more usual, 
+but the second may occur, e.g. when variables are consumers assessing specific products. 
 Each boostrapped data matrix is submitted to CLV in order to get partitions from 1 to nmax clusters.
-For each number of clusters, K, the adjusted Rand Index between actual and the bootstrapped partitions are computed and used in order to assess the stability of the solution into K clusters.
-Parallel computing is performed in order to save time.
+For each number of clusters, K, the Rand Index, the adjusted Rand Index, 
+as well as the cohesion and the isolation of the clusters
+of the observed partition and the bootstrapped partitions are computed. 
+These criteria are used for assessing the stability of the solution into K clusters.
+Parallel computing is performed for time saving.
 }
 \seealso{
 CLV

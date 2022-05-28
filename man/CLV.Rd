@@ -4,8 +4,18 @@
 \alias{CLV}
 \title{Hierarchical clustering of variables with consolidation}
 \usage{
-CLV(X, Xu = NULL, Xr = NULL, method = NULL, sX = TRUE,
-  sXr = FALSE, sXu = FALSE, nmax = 20, maxiter = 20)
+CLV(
+  X,
+  Xu = NULL,
+  Xr = NULL,
+  method = NULL,
+  sX = TRUE,
+  sXr = FALSE,
+  sXu = FALSE,
+  nmax = 20,
+  maxiter = 20,
+  graph = TRUE
+)
 }
 \arguments{
 \item{X}{: The matrix of variables to be clustered}
@@ -30,6 +40,9 @@ CLV(X, Xu = NULL, Xr = NULL, method = NULL, sX = TRUE,
 \item{nmax}{: maximum number of partitions for which the consolidation will be done (by default nmax=20)}
 
 \item{maxiter}{: maximum number of iterations allowed for the consolidation/partitioning algorithm (by default maxiter=20)}
+
+\item{graph, }{TRUE/FALSE (by default TRUE) : dendrogram and variation of the optimization criterion. \cr 
+These plots can also be obtained with "plot"}
 }
 \value{
 \item{tabres}{ Results of the clustering algorithm.

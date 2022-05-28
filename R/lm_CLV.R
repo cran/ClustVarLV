@@ -100,7 +100,7 @@ lm_CLV = function(X,y,method="directional",sX=TRUE,shrinkp=0.5, strategy="none",
   # performed on X, one time only
   # ascendant hierarchy, with consolidation
   #start.time <- Sys.time()
-  res.clv_X=CLV(X,sX=sX,method=method,nmax=gpmax)  # avec consolidation 
+  res.clv_X=CLV(X,sX=sX,method=method,nmax=gpmax,graph=FALSE)  # avec consolidation 
   #end.time <- Sys.time()
   #time.taken <- end.time - start.time;          print(time.taken)
   

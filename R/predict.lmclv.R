@@ -80,9 +80,19 @@ predict.lmclv <-    function(object,newdata,shrinkp,...)
       tabresp=cbind(tabresp,resp)
     }
   }
-
+ 
+  rownames(tabpred)=rownames(newdata)
+  colnames(tabpred)=paste("A",0:nblv,sep="")
+  
   if (!yisfact) listres=list(predictions=tabpred)
-  if (yisfact) listres=list(predictions=tabpred,probabilities=tabprob,responses=tabresp)
+  
+  if (yisfact) {
+    rownames(tabprob)=rownames(newdata)
+    colnames(tabprob)=paste("A",0:nblv,sep="")
+    rownames(tabresp)=rownames(newdata)
+    colnames(tabresp)=paste("A",0:nblv,sep="")
+    listres=list(predictions=tabpred,probabilities=tabprob,responses=tabresp)
+  }
   return(listres)  
 }        
    
